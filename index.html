@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Meli IA 💗</title>
@@ -11,74 +12,66 @@
 
 body{
 
-    background:#30051f;
-    font-family:Arial;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
+background:#30051f;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 
 }
 
 
 .app{
 
-    width:90%;
-    max-width:420px;
-    background:#ffb6d9;
-    padding:20px;
-    border-radius:25px;
+width:90%;
+max-width:430px;
+background:#ffb6d9;
+padding:20px;
+border-radius:25px;
 
 }
 
 
 h1{
 
-    text-align:center;
-    color:#ff1a75;
+text-align:center;
+color:#ff1475;
 
 }
 
 
 #chat{
 
-    background:white;
-    height:350px;
-    overflow:auto;
-    padding:15px;
-    border-radius:15px;
-    margin-bottom:10px;
+background:white;
+height:360px;
+overflow:auto;
+padding:15px;
+border-radius:15px;
 
 }
+
 
 
 input{
 
-    width:65%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
+width:58%;
+padding:12px;
+border-radius:10px;
+border:0;
 
 }
+
 
 
 button{
 
-    width:30%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#ff4d9d;
-    color:white;
-    font-weight:bold;
-
-}
-
-
-button:active{
-
-    transform:scale(0.95);
+padding:12px;
+border:0;
+border-radius:10px;
+background:#ff4d9d;
+color:white;
 
 }
 
@@ -89,7 +82,9 @@ button:active{
 </head>
 
 
+
 <body>
+
 
 
 <div class="app">
@@ -98,24 +93,37 @@ button:active{
 <h1>💗 Meli IA</h1>
 
 
+
 <div id="chat">
 
 💗 Meli:
 <br>
-Olá! Eu sou sua IA.
+Olá! Eu sou a Meli.
 <br>
 Criada por Luiz Benicio ✨
 
 </div>
 
 
-<input id="mensagem" placeholder="Digite uma mensagem...">
+
+<br>
+
+
+
+<input id="mensagem" placeholder="Digite uma mensagem">
+
+
 
 <button onclick="enviar()">
-
-Enviar 💗
-
+Enviar
 </button>
+
+
+
+<button onclick="ouvir()">
+🎤
+</button>
+
 
 
 </div>
@@ -127,17 +135,16 @@ Enviar 💗
 <script>
 
 
-let memoria = JSON.parse(
-
-localStorage.getItem("memoria")
-
-) || {};
+let memoria =
+JSON.parse(localStorage.getItem("meli_memoria"))
+|| {};
 
 
 
 let aprendendo=false;
 
-let perguntaAprender="";
+let perguntaEnsinar="";
+
 
 
 
@@ -147,11 +154,8 @@ function salvar(){
 
 
 localStorage.setItem(
-
-"memoria",
-
+"meli_memoria",
 JSON.stringify(memoria)
-
 );
 
 
@@ -161,13 +165,73 @@ JSON.stringify(memoria)
 
 
 
+
+
+function falar(texto){
+
+
+speechSynthesis.cancel();
+
+
+
+let voz =
+new SpeechSynthesisUtterance(texto);
+
+
+
+voz.lang="pt-BR";
+
+voz.rate=1;
+
+voz.pitch=1;
+
+
+
+speechSynthesis.speak(voz);
+
+
+}
+
+
+
+
+
+
+
+function escrever(texto){
+
+
+
+let chat =
+document.getElementById("chat");
+
+
+
+chat.innerHTML +=
+"<br><br>"+texto;
+
+
+
+chat.scrollTop =
+chat.scrollHeight;
+
+
+}
+
+
+
+
+
+
+
+
 function calcular(texto){
 
 
-let conta = texto.match(
 
+let conta =
+texto.match(
 /\d+\s*[\+\-\*\/]\s*\d+/
-
 );
 
 
@@ -178,17 +242,16 @@ if(conta){
 try{
 
 
-let resultado = eval(conta[0]);
-
-
-return "O resultado é "+resultado+" 💗";
+return "O resultado é "
++eval(conta[0])
++" 💗";
 
 
 }catch{}
 
 
-
 }
+
 
 
 return null;
@@ -200,15 +263,24 @@ return null;
 
 
 
-function pensar(pergunta){
 
 
 
-pergunta = pergunta.toLowerCase();
+
+function pensar(msg){
 
 
 
-let conta = calcular(pergunta);
+let texto =
+msg.toLowerCase();
+
+
+
+
+
+let conta =
+calcular(texto);
+
 
 
 if(conta)
@@ -219,7 +291,8 @@ return conta;
 
 
 
-if(pergunta.includes("seu nome"))
+
+if(texto.includes("seu nome"))
 
 return "Meu nome é Meli 💗";
 
@@ -227,7 +300,8 @@ return "Meu nome é Meli 💗";
 
 
 
-if(pergunta.includes("quem criou você"))
+
+if(texto.includes("quem criou você"))
 
 return "Eu fui criada pelo Luiz Benicio ✨";
 
@@ -235,17 +309,22 @@ return "Eu fui criada pelo Luiz Benicio ✨";
 
 
 
-if(pergunta.includes("o que você é"))
 
-return "Sou uma inteligência artificial que conversa e aprende.";
+if(texto.includes("o que você é"))
 
-
-
+return "Sou uma inteligência artificial que conversa e aprende 💗";
 
 
-if(memoria[pergunta])
 
-return memoria[pergunta];
+
+
+
+
+if(memoria[texto])
+
+return memoria[texto];
+
+
 
 
 
@@ -256,6 +335,7 @@ return null;
 
 
 }
+
 
 
 
@@ -268,26 +348,28 @@ function enviar(){
 
 
 
-let caixa=document.getElementById("mensagem");
-
-let chat=document.getElementById("chat");
-
-
-
-let mensagem=caixa.value.trim().toLowerCase();
+let caixa =
+document.getElementById("mensagem");
 
 
 
-if(mensagem=="")
+let msg =
+caixa.value.trim();
+
+
+
+
+
+if(msg=="")
 return;
 
 
 
 
 
-chat.innerHTML +=
-
-"<br><br>👤 Você: "+mensagem;
+escrever(
+"👤 Você: "+msg
+);
 
 
 
@@ -298,32 +380,96 @@ if(aprendendo){
 
 
 
-memoria[perguntaAprender]=mensagem;
+memoria[perguntaEnsinar]=msg;
+
 
 
 salvar();
 
 
 
-chat.innerHTML +=
+let resposta =
+"Aprendi! Vou lembrar disso 💗";
 
-"<br>💗 Meli: Aprendi! Vou lembrar disso ✨";
+
+
+escrever(
+"💗 Meli: "+resposta
+);
+
+
+
+falar(resposta);
 
 
 
 aprendendo=false;
 
-perguntaAprender="";
+
+
+perguntaEnsinar="";
+
+
+
+caixa.value="";
+
+return;
 
 
 
 }
 
-else{
 
 
 
-let resposta=pensar(mensagem);
+
+
+
+
+
+if(msg.toLowerCase()
+.includes("quero te ensinar")){
+
+
+let resposta =
+"Claro! Me diga o que devo aprender 💗";
+
+
+
+escrever(
+"💗 Meli: "+resposta
+);
+
+
+
+falar(resposta);
+
+
+
+aprendendo=true;
+
+
+
+caixa.value="";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+let resposta =
+pensar(msg);
+
+
+
 
 
 
@@ -331,9 +477,13 @@ if(resposta){
 
 
 
-chat.innerHTML +=
+escrever(
+"💗 Meli: "+resposta
+);
 
-"<br>💗 Meli: "+resposta;
+
+
+falar(resposta);
 
 
 
@@ -342,15 +492,23 @@ chat.innerHTML +=
 else{
 
 
-chat.innerHTML +=
 
-"<br>💗 Meli: Eu ainda não sei isso. Me ensine a resposta:";
+let resposta =
+"Eu ainda não sei isso. Se quiser me ensinar, diga: quero te ensinar 💗";
 
 
 
-aprendendo=true;
+escrever(
+"💗 Meli: "+resposta
+);
 
-perguntaAprender=mensagem;
+
+
+falar(resposta);
+
+
+
+perguntaEnsinar=msg;
 
 
 
@@ -358,7 +516,6 @@ perguntaAprender=mensagem;
 
 
 
-}
 
 
 
@@ -366,7 +523,49 @@ perguntaAprender=mensagem;
 caixa.value="";
 
 
-chat.scrollTop=chat.scrollHeight;
+
+}
+
+
+
+
+
+
+
+
+
+
+function ouvir(){
+
+
+
+let reconhecimento =
+new(
+window.SpeechRecognition ||
+window.webkitSpeechRecognition
+);
+
+
+
+reconhecimento.lang="pt-BR";
+
+
+
+reconhecimento.start();
+
+
+
+
+reconhecimento.onresult=function(event){
+
+
+
+document.getElementById("mensagem").value =
+event.results[0][0].transcript;
+
+
+
+};
 
 
 
