@@ -20,7 +20,6 @@ height:100vh;
 margin:0;
 }
 
-
 .app{
 width:90%;
 max-width:430px;
@@ -29,12 +28,10 @@ padding:20px;
 border-radius:25px;
 }
 
-
 h1{
 text-align:center;
 color:#ff1475;
 }
-
 
 #chat{
 background:white;
@@ -44,14 +41,12 @@ padding:15px;
 border-radius:15px;
 }
 
-
 input{
 width:58%;
 padding:12px;
 border-radius:10px;
 border:0;
 }
-
 
 button{
 padding:12px;
@@ -60,7 +55,6 @@ border-radius:10px;
 background:#ff4d9d;
 color:white;
 }
-
 
 </style>
 
@@ -90,16 +84,11 @@ Criada por Luiz Benicio ✨
 <br>
 
 
-<input id="mensagem" placeholder="Digite ou fale...">
+<input id="mensagem" placeholder="Digite uma mensagem">
 
 
 <button onclick="enviar()">
 Enviar
-</button>
-
-
-<button onclick="ouvir()">
-🎤
 </button>
 
 
@@ -108,12 +97,59 @@ Enviar
 
 
 
-<script>
+
+<script type="module">
 
 
-let memoria =
-JSON.parse(localStorage.getItem("meli_memoria"))
-|| {};
+// FIREBASE
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import { 
+getFirestore,
+doc,
+setDoc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
+
+// COLOQUE SUA CONFIGURAÇÃO AQUI
+
+const firebaseConfig = {
+
+apiKey:"SUA_API_KEY",
+
+authDomain:"SEU_DOMINIO",
+
+projectId:"SEU_PROJECT_ID",
+
+storageBucket:"",
+
+messagingSenderId:"",
+
+appId:""
+
+};
+
+
+
+
+const app =
+initializeApp(firebaseConfig);
+
+
+
+const db =
+getFirestore(app);
+
+
+
+
 
 
 let aprendendo=false;
@@ -121,26 +157,23 @@ let aprendendo=false;
 let perguntaEnsinar="";
 
 
-let ouvindo=false;
-
-let reconhecimento;
 
 
 
+function escrever(texto){
+
+let chat =
+document.getElementById("chat");
 
 
+chat.innerHTML +=
+"<br><br>"+texto;
 
 
-function salvar(){
-
-localStorage.setItem(
-"meli_memoria",
-JSON.stringify(memoria)
-);
+chat.scrollTop =
+chat.scrollHeight;
 
 }
-
-
 
 
 
@@ -148,115 +181,73 @@ JSON.stringify(memoria)
 
 function falar(texto){
 
+let voz =
+new SpeechSynthesisUtterance(texto);
 
-speechSynthesis.cancel();
+
+voz.lang="pt-BR";
+
+
+speechSynthesis.speak(voz);
+
+}
 
 
 
-let limpo =
-texto.replace(
-/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-""
+
+
+
+// SALVAR NA MEMÓRIA GLOBAL
+
+async function salvarMemoria(pergunta,resposta){
+
+
+await setDoc(
+
+doc(
+db,
+"memoria",
+pergunta
+),
+
+{
+
+resposta:resposta
+
+}
+
 );
 
 
-
-let fala =
-new SpeechSynthesisUtterance(limpo);
+}
 
 
 
-fala.lang="pt-BR";
-
-fala.rate=1;
-
-fala.pitch=1.1;
 
 
 
-let vozes =
-speechSynthesis.getVoices();
+// BUSCAR NA MEMÓRIA GLOBAL
+
+async function buscarMemoria(pergunta){
 
 
 
-let feminina =
-vozes.find(v =>
-v.lang.includes("pt") &&
-(
-v.name.toLowerCase().includes("female") ||
-v.name.toLowerCase().includes("maria") ||
-v.name.toLowerCase().includes("google")
+let resultado =
+await getDoc(
+
+doc(
+db,
+"memoria",
+pergunta
 )
+
 );
 
 
 
-if(feminina){
+if(resultado.exists()){
 
-fala.voice=feminina;
-
-}
-
-
-
-speechSynthesis.speak(fala);
-
-
-}
-
-
-
-
-
-
-
-
-function escrever(texto){
-
-
-let chat =
-document.getElementById("chat");
-
-
-
-chat.innerHTML +=
-"<br><br>"+texto;
-
-
-
-chat.scrollTop =
-chat.scrollHeight;
-
-
-}
-
-
-
-
-
-
-
-function calcular(texto){
-
-
-let conta =
-texto.match(
-/\d+\s*[\+\-\*\/]\s*\d+/
-);
-
-
-
-if(conta){
-
-
-try{
-
-return "O resultado é "
-+eval(conta[0]);
-
-}catch{}
-
-
+return resultado.data().resposta;
 
 }
 
@@ -275,8 +266,7 @@ return null;
 
 
 
-function pensar(msg){
-
+async function pensar(msg){
 
 
 let texto =
@@ -284,45 +274,25 @@ msg.toLowerCase();
 
 
 
-let conta =
-calcular(texto);
-
-
-
-if(conta)
-
-return conta;
-
-
-
 
 
 if(texto.includes("seu nome"))
-
 return "Meu nome é Meli";
 
 
 
-
 if(texto.includes("quem criou você"))
-
 return "Eu fui criada pelo Luiz Benicio";
 
 
 
-
-if(texto.includes("o que você é"))
-
-return "Sou uma inteligência artificial que conversa e aprende";
+let memoria =
+await buscarMemoria(texto);
 
 
 
-
-if(memoria[texto])
-
-return memoria[texto];
-
-
+if(memoria)
+return memoria;
 
 
 
@@ -339,7 +309,7 @@ return null;
 
 
 
-function enviar(){
+async function enviar(){
 
 
 
@@ -347,17 +317,13 @@ let caixa =
 document.getElementById("mensagem");
 
 
-
 let msg =
 caixa.value.trim();
 
 
 
-
-
 if(msg=="")
 return;
-
 
 
 
@@ -370,30 +336,25 @@ escrever(
 
 
 
-
-
-
-
 if(aprendendo){
 
 
 
-memoria[perguntaEnsinar]=msg;
-
-
-salvar();
+await salvarMemoria(
+perguntaEnsinar,
+msg
+);
 
 
 
 let resposta =
-"Aprendi! Vou lembrar disso";
+"Aprendi! Agora todos os usuários poderão saber disso 💗";
 
 
 
 escrever(
 "💗 Meli: "+resposta
 );
-
 
 
 falar(resposta);
@@ -404,18 +365,11 @@ aprendendo=false;
 
 perguntaEnsinar="";
 
-
-
 caixa.value="";
-
 
 return;
 
-
 }
-
-
-
 
 
 
@@ -427,7 +381,7 @@ if(msg.toLowerCase()
 
 
 let resposta =
-"Claro! Me diga o que devo aprender";
+"Claro! Me diga o que devo aprender 💗";
 
 
 
@@ -436,13 +390,11 @@ escrever(
 );
 
 
-
 falar(resposta);
 
 
 
 aprendendo=true;
-
 
 
 caixa.value="";
@@ -458,13 +410,8 @@ return;
 
 
 
-
-
-
-
 let resposta =
-pensar(msg);
-
+await pensar(msg);
 
 
 
@@ -478,27 +425,22 @@ escrever(
 );
 
 
-
 falar(resposta);
 
 
 
 }
 
-
-
 else{
 
 
 let resposta =
-"Eu ainda não sei isso. Se quiser me ensinar, diga: quero te ensinar";
-
+"Eu ainda não sei isso. Diga 'quero te ensinar' para me ensinar 💗";
 
 
 escrever(
 "💗 Meli: "+resposta
 );
-
 
 
 falar(resposta);
@@ -508,7 +450,6 @@ falar(resposta);
 perguntaEnsinar=msg;
 
 
-
 }
 
 
@@ -516,111 +457,6 @@ perguntaEnsinar=msg;
 
 
 caixa.value="";
-
-
-}
-
-
-
-
-
-
-
-
-
-function ouvir(){
-
-
-
-if(!ouvindo){
-
-
-
-reconhecimento =
-new(
-window.SpeechRecognition ||
-window.webkitSpeechRecognition
-);
-
-
-
-reconhecimento.lang="pt-BR";
-
-reconhecimento.continuous=true;
-
-
-
-reconhecimento.start();
-
-
-
-ouvindo=true;
-
-
-
-escrever(
-"🎤 Meli: Estou ouvindo..."
-);
-
-
-
-
-
-reconhecimento.onresult=function(event){
-
-
-
-let texto="";
-
-
-
-for(
-let i=event.resultIndex;
-i<event.results.length;
-i++
-){
-
-texto +=
-event.results[i][0].transcript;
-
-}
-
-
-
-document.getElementById("mensagem").value =
-texto;
-
-
-
-};
-
-
-
-}
-
-
-
-else{
-
-
-
-reconhecimento.stop();
-
-
-ouvindo=false;
-
-
-
-setTimeout(()=>{
-
-enviar();
-
-},500);
-
-
-
-}
-
 
 
 }
