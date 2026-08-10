@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Meli IA 💗</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<style>
+
+body{
+
+    background:#30051f;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+
+}
+
+
+.app{
+
+    width:90%;
+    max-width:420px;
+    background:#ffb6d9;
+    padding:20px;
+    border-radius:25px;
+
+}
+
+
+h1{
+
+    text-align:center;
+    color:#ff1a75;
+
+}
+
+
+#chat{
+
+    background:white;
+    height:350px;
+    overflow:auto;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:10px;
+
+}
+
+
+input{
+
+    width:65%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+
+}
+
+
+button{
+
+    width:30%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#ff4d9d;
+    color:white;
+    font-weight:bold;
+
+}
+
+
+button:active{
+
+    transform:scale(0.95);
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<h1>💗 Meli IA</h1>
+
+
+<div id="chat">
+
+💗 Meli:
+<br>
+Olá! Eu sou sua IA.
+<br>
+Criada por Luiz Benicio ✨
+
+</div>
+
+
+<input id="mensagem" placeholder="Digite uma mensagem...">
+
+<button onclick="enviar()">
+
+Enviar 💗
+
+</button>
+
+
+</div>
+
+
+
+
+
+<script>
+
+
+let memoria = JSON.parse(
+
+localStorage.getItem("memoria")
+
+) || {};
+
+
+
+let aprendendo=false;
+
+let perguntaAprender="";
+
+
+
+
+
+function salvar(){
+
+
+localStorage.setItem(
+
+"memoria",
+
+JSON.stringify(memoria)
+
+);
+
+
+}
+
+
+
+
+
+function calcular(texto){
+
+
+let conta = texto.match(
+
+/\d+\s*[\+\-\*\/]\s*\d+/
+
+);
+
+
+
+if(conta){
+
+
+try{
+
+
+let resultado = eval(conta[0]);
+
+
+return "O resultado é "+resultado+" 💗";
+
+
+}catch{}
+
+
+
+}
+
+
+return null;
+
+
+}
+
+
+
+
+
+function pensar(pergunta){
+
+
+
+pergunta = pergunta.toLowerCase();
+
+
+
+let conta = calcular(pergunta);
+
+
+if(conta)
+
+return conta;
+
+
+
+
+
+if(pergunta.includes("seu nome"))
+
+return "Meu nome é Meli 💗";
+
+
+
+
+
+if(pergunta.includes("quem criou você"))
+
+return "Eu fui criada pelo Luiz Benicio ✨";
+
+
+
+
+
+if(pergunta.includes("o que você é"))
+
+return "Sou uma inteligência artificial que conversa e aprende.";
+
+
+
+
+
+if(memoria[pergunta])
+
+return memoria[pergunta];
+
+
+
+
+
+return null;
+
+
+
+}
+
+
+
+
+
+
+
+
+function enviar(){
+
+
+
+let caixa=document.getElementById("mensagem");
+
+let chat=document.getElementById("chat");
+
+
+
+let mensagem=caixa.value.trim().toLowerCase();
+
+
+
+if(mensagem=="")
+return;
+
+
+
+
+
+chat.innerHTML +=
+
+"<br><br>👤 Você: "+mensagem;
+
+
+
+
+
+
+if(aprendendo){
+
+
+
+memoria[perguntaAprender]=mensagem;
+
+
+salvar();
+
+
+
+chat.innerHTML +=
+
+"<br>💗 Meli: Aprendi! Vou lembrar disso ✨";
+
+
+
+aprendendo=false;
+
+perguntaAprender="";
+
+
+
+}
+
+else{
+
+
+
+let resposta=pensar(mensagem);
+
+
+
+if(resposta){
+
+
+
+chat.innerHTML +=
+
+"<br>💗 Meli: "+resposta;
+
+
+
+}
+
+else{
+
+
+chat.innerHTML +=
+
+"<br>💗 Meli: Eu ainda não sei isso. Me ensine a resposta:";
+
+
+
+aprendendo=true;
+
+perguntaAprender=mensagem;
+
+
+
+}
+
+
+
+}
+
+
+
+
+caixa.value="";
+
+
+chat.scrollTop=chat.scrollHeight;
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
