@@ -13,48 +13,64 @@
 body{
 background:#30051f;
 font-family:Arial;
-display:flex;
-justify-content:center;
-align-items:center;
 height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
 margin:0;
 }
 
+
 .app{
+
+background:#ffb6d9;
 width:90%;
 max-width:430px;
-background:#ffb6d9;
 padding:20px;
 border-radius:25px;
+
 }
+
 
 h1{
+
 text-align:center;
 color:#ff1475;
+
 }
 
+
 #chat{
+
 background:white;
-height:360px;
+height:350px;
 overflow:auto;
 padding:15px;
 border-radius:15px;
+
 }
 
+
 input{
+
 width:55%;
 padding:12px;
 border-radius:10px;
 border:0;
+
 }
 
+
 button{
+
 padding:12px;
 border:0;
 border-radius:10px;
 background:#ff4d9d;
 color:white;
+
 }
+
 
 </style>
 
@@ -84,7 +100,7 @@ Criada por Luiz Benicio ✨
 <br>
 
 
-<input id="mensagem" placeholder="Digite ou fale...">
+<input id="mensagem" placeholder="Digite ou fale">
 
 
 <button onclick="enviar()">
@@ -92,7 +108,7 @@ Enviar
 </button>
 
 
-<button onclick="ouvir()">
+<button onclick="voz()">
 🎤
 </button>
 
@@ -103,70 +119,31 @@ Enviar
 
 
 
-<script type="module">
+<script>
 
 
-import { initializeApp } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-
-import { 
-getFirestore,
-doc,
-setDoc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-
-
-
-
-// COLOQUE SEU FIREBASE AQUI
-
-const firebaseConfig = {
-
-apiKey:"SUA_API_KEY",
-
-authDomain:"SEU_AUTH_DOMAIN",
-
-projectId:"SEU_PROJECT_ID",
-
-storageBucket:"SEU_STORAGE",
-
-messagingSenderId:"SEU_ID",
-
-appId:"SEU_APP_ID"
-
-};
-
-
-
-
-
-const app =
-initializeApp(firebaseConfig);
-
-
-const db =
-getFirestore(app);
-
-
-
-
-
+let memoria =
+JSON.parse(localStorage.getItem("meli"))
+|| {};
 
 
 let aprendendo=false;
 
-let perguntaEnsinar="";
+let pergunta="";
 
 
-let ouvindo=false;
-
-let reconhecimento;
 
 
+
+
+function salvar(){
+
+localStorage.setItem(
+"meli",
+JSON.stringify(memoria)
+);
+
+}
 
 
 
@@ -195,13 +172,7 @@ chat.scrollHeight;
 
 
 
-
-
 function falar(texto){
-
-
-speechSynthesis.cancel();
-
 
 
 let limpo =
@@ -216,9 +187,10 @@ let voz =
 new SpeechSynthesisUtterance(limpo);
 
 
+
 voz.lang="pt-BR";
 
-voz.pitch=1.1;
+voz.pitch=1.2;
 
 voz.rate=1;
 
@@ -235,59 +207,36 @@ speechSynthesis.speak(voz);
 
 
 
+function pensar(msg){
 
 
-async function salvarMemoria(pergunta,resposta){
-
-
-await setDoc(
-
-doc(
-db,
-"memoria",
-pergunta
-),
-
-{
-
-resposta:resposta
-
-}
-
-);
-
-
-}
+let m =
+msg.toLowerCase();
 
 
 
+if(m.includes("seu nome"))
+
+return "Meu nome é Meli";
 
 
 
+if(m.includes("quem criou você"))
 
-
-async function buscarMemoria(pergunta){
-
-
-
-let resultado =
-await getDoc(
-
-doc(
-db,
-"memoria",
-pergunta
-)
-
-);
+return "Eu fui criada pelo Luiz Benicio";
 
 
 
-if(resultado.exists()){
+if(m.includes("o que você é"))
 
-return resultado.data().resposta;
+return "Sou uma inteligência artificial que conversa e aprende";
 
-}
+
+
+if(memoria[m])
+
+return memoria[m];
+
 
 
 return null;
@@ -303,46 +252,7 @@ return null;
 
 
 
-async function pensar(msg){
-
-
-let texto =
-msg.toLowerCase();
-
-
-
-if(texto.includes("seu nome"))
-
-return "Meu nome é Meli";
-
-
-
-if(texto.includes("quem criou você"))
-
-return "Eu fui criada pelo Luiz Benicio";
-
-
-
-let resposta =
-await buscarMemoria(texto);
-
-
-
-return resposta;
-
-
-}
-
-
-
-
-
-
-
-
-
-async function enviar(){
-
+function enviar(){
 
 
 let caixa =
@@ -354,7 +264,7 @@ caixa.value.trim();
 
 
 
-if(msg=="")
+if(msg==="")
 return;
 
 
@@ -372,16 +282,15 @@ escrever(
 if(aprendendo){
 
 
+memoria[pergunta]=msg;
 
-await salvarMemoria(
-perguntaEnsinar,
-msg
-);
+
+salvar();
 
 
 
 let resposta =
-"Aprendi! Agora todos os usuários podem saber disso";
+"Aprendi! Vou lembrar disso";
 
 
 
@@ -390,20 +299,17 @@ escrever(
 );
 
 
-
 falar(resposta);
 
 
 
 aprendendo=false;
 
-perguntaEnsinar="";
+pergunta="";
 
 caixa.value="";
 
-
 return;
-
 
 }
 
@@ -449,12 +355,26 @@ return;
 
 
 let resposta =
-await pensar(msg);
+pensar(msg);
 
 
 
 
-if(resposta){
+
+if(resposta==null){
+
+
+resposta =
+"Eu ainda não sei isso. Você pode me ensinar.";
+
+
+pergunta=msg;
+
+aprendendo=true;
+
+
+}
+
 
 
 
@@ -465,34 +385,6 @@ escrever(
 
 
 falar(resposta);
-
-
-
-}
-
-else{
-
-
-let resposta =
-"Eu ainda não sei isso. Me ensine dizendo: quero te ensinar";
-
-
-escrever(
-"💗 Meli: "+resposta
-);
-
-
-
-falar(resposta);
-
-
-
-perguntaEnsinar=msg;
-
-
-}
-
-
 
 
 
@@ -509,23 +401,18 @@ caixa.value="";
 
 
 
-function ouvir(){
+function voz(){
 
 
-
-if(!ouvindo){
-
-
-
-let Recon =
+let Reconhecimento =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
 
 
-if(!Recon){
+if(!Reconhecimento){
 
-alert("Seu navegador não suporta microfone");
+alert("Seu navegador não suporta voz");
 
 return;
 
@@ -533,19 +420,15 @@ return;
 
 
 
-reconhecimento =
-new Recon();
+let ouvir =
+new Reconhecimento();
 
 
 
-reconhecimento.lang="pt-BR";
+ouvir.lang="pt-BR";
 
 
-reconhecimento.start();
-
-
-
-ouvindo=true;
+ouvir.start();
 
 
 
@@ -555,29 +438,20 @@ escrever(
 
 
 
+ouvir.onresult=function(event){
 
 
-reconhecimento.onresult=function(event){
-
-
-document.getElementById("mensagem").value =
+let texto =
 event.results[0][0].transcript;
 
 
-};
+
+document.getElementById("mensagem").value =
+texto;
 
 
 
-}
-
-else{
-
-
-reconhecimento.stop();
-
-
-ouvindo=false;
-
+// envia automaticamente
 
 setTimeout(()=>{
 
@@ -587,11 +461,11 @@ enviar();
 
 
 
+};
+
+
+
 }
-
-
-}
-
 
 
 </script>
@@ -600,3 +474,4 @@ enviar();
 </body>
 
 </html>
+
