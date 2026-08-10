@@ -22,59 +22,49 @@ margin:0;
 
 
 .app{
-
 background:#ffb6d9;
 width:90%;
 max-width:430px;
 padding:20px;
 border-radius:25px;
-
 }
 
 
 h1{
-
 text-align:center;
 color:#ff1475;
-
 }
 
 
 #chat{
-
 background:white;
 height:350px;
 overflow:auto;
 padding:15px;
 border-radius:15px;
-
 }
 
 
 input{
-
 width:55%;
 padding:12px;
 border-radius:10px;
 border:0;
-
 }
 
 
 button{
-
 padding:12px;
 border:0;
 border-radius:10px;
 background:#ff4d9d;
 color:white;
-
 }
-
 
 </style>
 
 </head>
+
 
 
 <body>
@@ -100,7 +90,7 @@ Criada por Luiz Benicio ✨
 <br>
 
 
-<input id="mensagem" placeholder="Digite ou fale">
+<input id="mensagem" placeholder="Digite ou fale...">
 
 
 <button onclick="enviar()">
@@ -123,13 +113,21 @@ Enviar
 
 
 let memoria =
-JSON.parse(localStorage.getItem("meli"))
+JSON.parse(localStorage.getItem("meli_memoria"))
 || {};
+
 
 
 let aprendendo=false;
 
-let pergunta="";
+let perguntaAprender="";
+
+
+
+let ouvindo=false;
+
+let reconhecimento;
+
 
 
 
@@ -139,7 +137,7 @@ let pergunta="";
 function salvar(){
 
 localStorage.setItem(
-"meli",
+"meli_memoria",
 JSON.stringify(memoria)
 );
 
@@ -153,6 +151,7 @@ JSON.stringify(memoria)
 
 function escrever(texto){
 
+
 let chat =
 document.getElementById("chat");
 
@@ -164,6 +163,7 @@ chat.innerHTML +=
 chat.scrollTop =
 chat.scrollHeight;
 
+
 }
 
 
@@ -172,7 +172,13 @@ chat.scrollHeight;
 
 
 
+
+
 function falar(texto){
+
+
+speechSynthesis.cancel();
+
 
 
 let limpo =
@@ -190,9 +196,29 @@ new SpeechSynthesisUtterance(limpo);
 
 voz.lang="pt-BR";
 
+voz.rate=1;
+
 voz.pitch=1.2;
 
-voz.rate=1;
+
+
+let vozes =
+speechSynthesis.getVoices();
+
+
+
+let feminina =
+vozes.find(v =>
+v.lang.includes("pt")
+);
+
+
+
+if(feminina){
+
+voz.voice=feminina;
+
+}
 
 
 
@@ -207,35 +233,41 @@ speechSynthesis.speak(voz);
 
 
 
+
+
 function pensar(msg){
 
 
-let m =
+
+let texto =
 msg.toLowerCase();
 
 
 
-if(m.includes("seu nome"))
+if(texto.includes("seu nome"))
 
 return "Meu nome é Meli";
 
 
 
-if(m.includes("quem criou você"))
+
+if(texto.includes("quem criou você"))
 
 return "Eu fui criada pelo Luiz Benicio";
 
 
 
-if(m.includes("o que você é"))
+
+if(texto.includes("o que você é"))
 
 return "Sou uma inteligência artificial que conversa e aprende";
 
 
 
-if(memoria[m])
 
-return memoria[m];
+if(memoria[texto])
+
+return memoria[texto];
 
 
 
@@ -255,8 +287,10 @@ return null;
 function enviar(){
 
 
+
 let caixa =
 document.getElementById("mensagem");
+
 
 
 let msg =
@@ -266,6 +300,7 @@ caixa.value.trim();
 
 if(msg==="")
 return;
+
 
 
 
@@ -282,7 +317,8 @@ escrever(
 if(aprendendo){
 
 
-memoria[pergunta]=msg;
+
+memoria[perguntaAprender]=msg;
 
 
 salvar();
@@ -290,7 +326,7 @@ salvar();
 
 
 let resposta =
-"Aprendi! Vou lembrar disso";
+"Aprendi! Vou lembrar disso 💗";
 
 
 
@@ -299,19 +335,24 @@ escrever(
 );
 
 
+
 falar(resposta);
 
 
 
 aprendendo=false;
 
-pergunta="";
+perguntaAprender="";
+
 
 caixa.value="";
 
 return;
 
+
 }
+
+
 
 
 
@@ -324,7 +365,8 @@ if(msg.toLowerCase()
 
 
 let resposta =
-"Claro! Me diga o que devo aprender";
+"Claro! Me diga o que devo aprender 💗";
+
 
 
 escrever(
@@ -341,7 +383,6 @@ aprendendo=true;
 
 
 caixa.value="";
-
 
 return;
 
@@ -361,20 +402,7 @@ pensar(msg);
 
 
 
-if(resposta==null){
-
-
-resposta =
-"Eu ainda não sei isso. Você pode me ensinar.";
-
-
-pergunta=msg;
-
-aprendendo=true;
-
-
-}
-
+if(resposta){
 
 
 
@@ -385,6 +413,36 @@ escrever(
 
 
 falar(resposta);
+
+
+
+}
+
+else{
+
+
+let resposta =
+"Eu ainda não sei isso. Me ensine a resposta 💗";
+
+
+escrever(
+"💗 Meli: "+resposta
+);
+
+
+
+falar(resposta);
+
+
+
+perguntaAprender=msg;
+
+
+aprendendo=true;
+
+
+
+}
 
 
 
@@ -401,7 +459,11 @@ caixa.value="";
 
 
 
+// SISTEMA DE VOZ CORRIGIDO
+
+
 function voz(){
+
 
 
 let Reconhecimento =
@@ -412,7 +474,11 @@ window.webkitSpeechRecognition;
 
 if(!Reconhecimento){
 
-alert("Seu navegador não suporta voz");
+
+alert(
+"Seu navegador não suporta reconhecimento de voz"
+);
+
 
 return;
 
@@ -420,15 +486,35 @@ return;
 
 
 
-let ouvir =
+
+
+
+if(!ouvindo){
+
+
+
+reconhecimento =
 new Reconhecimento();
 
 
 
-ouvir.lang="pt-BR";
+reconhecimento.lang="pt-BR";
 
 
-ouvir.start();
+
+reconhecimento.continuous=true;
+
+
+
+reconhecimento.interimResults=true;
+
+
+
+reconhecimento.start();
+
+
+
+ouvindo=true;
 
 
 
@@ -438,11 +524,30 @@ escrever(
 
 
 
-ouvir.onresult=function(event){
 
 
-let texto =
-event.results[0][0].transcript;
+
+reconhecimento.onresult=function(event){
+
+
+
+let texto="";
+
+
+
+for(
+let i=event.resultIndex;
+i<event.results.length;
+i++
+){
+
+
+texto +=
+event.results[i][0].transcript;
+
+
+}
+
 
 
 
@@ -451,21 +556,55 @@ texto;
 
 
 
-// envia automaticamente
+};
 
-setTimeout(()=>{
 
-enviar();
 
-},500);
 
+
+
+reconhecimento.onerror=function(){
+
+
+ouvindo=false;
+
+
+escrever(
+"❌ Não consegui ouvir"
+);
 
 
 };
 
 
 
+
+
+
 }
+
+else{
+
+
+ouvindo=false;
+
+
+
+reconhecimento.stop();
+
+
+
+escrever(
+"✅ Texto capturado"
+);
+
+
+}
+
+
+}
+
+
 
 
 </script>
