@@ -11,7 +11,6 @@
 <style>
 
 body{
-
 background:#30051f;
 font-family:Arial;
 display:flex;
@@ -19,79 +18,62 @@ justify-content:center;
 align-items:center;
 height:100vh;
 margin:0;
-
 }
 
 
 .app{
-
 width:90%;
 max-width:430px;
 background:#ffb6d9;
 padding:20px;
 border-radius:25px;
-
 }
 
 
 h1{
-
 text-align:center;
 color:#ff1475;
-
 }
 
 
 #chat{
-
 background:white;
 height:360px;
 overflow:auto;
 padding:15px;
 border-radius:15px;
-
 }
 
 
-
 input{
-
 width:58%;
 padding:12px;
 border-radius:10px;
 border:0;
-
 }
 
 
-
 button{
-
 padding:12px;
 border:0;
 border-radius:10px;
 background:#ff4d9d;
 color:white;
-
 }
 
 
 </style>
 
-
 </head>
 
 
-
 <body>
-
 
 
 <div class="app">
 
 
 <h1>💗 Meli IA</h1>
-
 
 
 <div id="chat">
@@ -105,13 +87,10 @@ Criada por Luiz Benicio ✨
 </div>
 
 
-
 <br>
 
 
-
-<input id="mensagem" placeholder="Digite uma mensagem">
-
+<input id="mensagem" placeholder="Digite ou fale...">
 
 
 <button onclick="enviar()">
@@ -119,15 +98,12 @@ Enviar
 </button>
 
 
-
 <button onclick="ouvir()">
 🎤
 </button>
 
 
-
 </div>
-
 
 
 
@@ -140,10 +116,15 @@ JSON.parse(localStorage.getItem("meli_memoria"))
 || {};
 
 
-
 let aprendendo=false;
 
 let perguntaEnsinar="";
+
+
+let ouvindo=false;
+
+let reconhecimento;
+
 
 
 
@@ -152,12 +133,10 @@ let perguntaEnsinar="";
 
 function salvar(){
 
-
 localStorage.setItem(
 "meli_memoria",
 JSON.stringify(memoria)
 );
-
 
 }
 
@@ -174,20 +153,53 @@ speechSynthesis.cancel();
 
 
 
-let voz =
-new SpeechSynthesisUtterance(texto);
+let limpo =
+texto.replace(
+/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+""
+);
 
 
 
-voz.lang="pt-BR";
-
-voz.rate=1;
-
-voz.pitch=1;
+let fala =
+new SpeechSynthesisUtterance(limpo);
 
 
 
-speechSynthesis.speak(voz);
+fala.lang="pt-BR";
+
+fala.rate=1;
+
+fala.pitch=1.1;
+
+
+
+let vozes =
+speechSynthesis.getVoices();
+
+
+
+let feminina =
+vozes.find(v =>
+v.lang.includes("pt") &&
+(
+v.name.toLowerCase().includes("female") ||
+v.name.toLowerCase().includes("maria") ||
+v.name.toLowerCase().includes("google")
+)
+);
+
+
+
+if(feminina){
+
+fala.voice=feminina;
+
+}
+
+
+
+speechSynthesis.speak(fala);
 
 
 }
@@ -198,8 +210,8 @@ speechSynthesis.speak(voz);
 
 
 
-function escrever(texto){
 
+function escrever(texto){
 
 
 let chat =
@@ -224,9 +236,7 @@ chat.scrollHeight;
 
 
 
-
 function calcular(texto){
-
 
 
 let conta =
@@ -241,13 +251,11 @@ if(conta){
 
 try{
 
-
 return "O resultado é "
-+eval(conta[0])
-+" 💗";
-
++eval(conta[0]);
 
 }catch{}
+
 
 
 }
@@ -276,8 +284,6 @@ msg.toLowerCase();
 
 
 
-
-
 let conta =
 calcular(texto);
 
@@ -291,31 +297,23 @@ return conta;
 
 
 
-
 if(texto.includes("seu nome"))
 
-return "Meu nome é Meli 💗";
-
-
+return "Meu nome é Meli";
 
 
 
 
 if(texto.includes("quem criou você"))
 
-return "Eu fui criada pelo Luiz Benicio ✨";
-
-
+return "Eu fui criada pelo Luiz Benicio";
 
 
 
 
 if(texto.includes("o que você é"))
 
-return "Sou uma inteligência artificial que conversa e aprende 💗";
-
-
-
+return "Sou uma inteligência artificial que conversa e aprende";
 
 
 
@@ -328,10 +326,7 @@ return memoria[texto];
 
 
 
-
-
 return null;
-
 
 
 }
@@ -376,6 +371,9 @@ escrever(
 
 
 
+
+
+
 if(aprendendo){
 
 
@@ -383,13 +381,12 @@ if(aprendendo){
 memoria[perguntaEnsinar]=msg;
 
 
-
 salvar();
 
 
 
 let resposta =
-"Aprendi! Vou lembrar disso 💗";
+"Aprendi! Vou lembrar disso";
 
 
 
@@ -405,16 +402,14 @@ falar(resposta);
 
 aprendendo=false;
 
-
-
 perguntaEnsinar="";
 
 
 
 caixa.value="";
 
-return;
 
+return;
 
 
 }
@@ -432,7 +427,7 @@ if(msg.toLowerCase()
 
 
 let resposta =
-"Claro! Me diga o que devo aprender 💗";
+"Claro! Me diga o que devo aprender";
 
 
 
@@ -465,9 +460,10 @@ return;
 
 
 
+
+
 let resposta =
 pensar(msg);
-
 
 
 
@@ -489,12 +485,13 @@ falar(resposta);
 
 }
 
+
+
 else{
 
 
-
 let resposta =
-"Eu ainda não sei isso. Se quiser me ensinar, diga: quero te ensinar 💗";
+"Eu ainda não sei isso. Se quiser me ensinar, diga: quero te ensinar";
 
 
 
@@ -518,14 +515,10 @@ perguntaEnsinar=msg;
 
 
 
-
-
 caixa.value="";
 
 
-
 }
-
 
 
 
@@ -539,7 +532,11 @@ function ouvir(){
 
 
 
-let reconhecimento =
+if(!ouvindo){
+
+
+
+reconhecimento =
 new(
 window.SpeechRecognition ||
 window.webkitSpeechRecognition
@@ -549,9 +546,22 @@ window.webkitSpeechRecognition
 
 reconhecimento.lang="pt-BR";
 
+reconhecimento.continuous=true;
+
 
 
 reconhecimento.start();
+
+
+
+ouvindo=true;
+
+
+
+escrever(
+"🎤 Meli: Estou ouvindo..."
+);
+
 
 
 
@@ -560,8 +570,25 @@ reconhecimento.onresult=function(event){
 
 
 
+let texto="";
+
+
+
+for(
+let i=event.resultIndex;
+i<event.results.length;
+i++
+){
+
+texto +=
+event.results[i][0].transcript;
+
+}
+
+
+
 document.getElementById("mensagem").value =
-event.results[0][0].transcript;
+texto;
 
 
 
@@ -573,8 +600,34 @@ event.results[0][0].transcript;
 
 
 
-</script>
+else{
 
+
+
+reconhecimento.stop();
+
+
+ouvindo=false;
+
+
+
+setTimeout(()=>{
+
+enviar();
+
+},500);
+
+
+
+}
+
+
+
+}
+
+
+
+</script>
 
 
 </body>
