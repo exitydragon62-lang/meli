@@ -1,64 +1,102 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="pt-BR">
 <head>
-
-<title>Meli IA 💗</title>
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Meli AI</title>
 
 <style>
 
 body{
-background:#30051f;
-font-family:Arial;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-margin:0;
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#ff8fd8,#ff4fa3);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
-
 
 .app{
-background:#ffb6d9;
-width:90%;
-max-width:430px;
-padding:20px;
-border-radius:25px;
+    width:95%;
+    max-width:420px;
+    height:90vh;
+    background:white;
+    border-radius:25px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 0 30px #ff1493;
 }
 
 
-h1{
-text-align:center;
-color:#ff1475;
+header{
+    background:#ff5db1;
+    color:white;
+    text-align:center;
+    padding:20px;
+    font-size:25px;
+    font-weight:bold;
 }
 
 
 #chat{
-background:white;
-height:350px;
-overflow:auto;
-padding:15px;
-border-radius:15px;
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+}
+
+
+.msg{
+    padding:12px;
+    margin:10px;
+    border-radius:20px;
+    max-width:80%;
+}
+
+
+.user{
+    background:#ffc1e5;
+    margin-left:auto;
+}
+
+
+.meli{
+    background:#ff5db1;
+    color:white;
+}
+
+
+.area{
+    display:flex;
+    padding:10px;
+    gap:5px;
 }
 
 
 input{
-width:55%;
-padding:12px;
-border-radius:10px;
-border:0;
+    flex:1;
+    border-radius:20px;
+    border:2px solid #ff5db1;
+    padding:12px;
+    outline:none;
 }
 
 
 button{
-padding:12px;
-border:0;
-border-radius:10px;
-background:#ff4d9d;
-color:white;
+    border:none;
+    background:#ff5db1;
+    color:white;
+    border-radius:50%;
+    width:45px;
+    height:45px;
+    font-size:20px;
+}
+
+
+button:hover{
+    transform:scale(1.1);
 }
 
 </style>
@@ -66,45 +104,31 @@ color:white;
 </head>
 
 
-
 <body>
 
 
 <div class="app">
 
-
-<h1>💗 Meli IA</h1>
-
-
-<div id="chat">
-
-💗 Meli:
-<br>
-Olá! Eu sou a Meli.
-<br>
-Criada por Luiz Benicio ✨
-
-</div>
+<header>
+💗 Meli AI
+</header>
 
 
-<br>
+<div id="chat"></div>
 
 
-<input id="mensagem" placeholder="Digite ou fale...">
+<div class="area">
 
+<input id="texto" placeholder="Digite uma mensagem...">
 
-<button onclick="enviar()">
-Enviar
-</button>
+<button onclick="enviar()">➤</button>
 
-
-<button onclick="voz()">
-🎤
-</button>
-
+<button onclick="ouvir()">🎤</button>
 
 </div>
 
+
+</div>
 
 
 
@@ -112,25 +136,7 @@ Enviar
 <script>
 
 
-let memoria =
-JSON.parse(localStorage.getItem("meli_memoria"))
-|| {};
-
-
-
-let aprendendo=false;
-
-let perguntaAprender="";
-
-
-
-let ouvindo=false;
-
-let reconhecimento;
-
-
-
-
+let memoria = JSON.parse(localStorage.getItem("meli_memoria")) || {};
 
 
 
@@ -146,29 +152,20 @@ JSON.stringify(memoria)
 
 
 
+function adicionar(texto,tipo){
 
+let div=document.createElement("div");
 
+div.className="msg "+tipo;
 
-function escrever(texto){
+div.innerHTML=texto;
 
+document.getElementById("chat").appendChild(div);
 
-let chat =
-document.getElementById("chat");
-
-
-chat.innerHTML +=
-"<br><br>"+texto;
-
-
-chat.scrollTop =
-chat.scrollHeight;
-
+document.getElementById("chat").scrollTop =
+document.getElementById("chat").scrollHeight;
 
 }
-
-
-
-
 
 
 
@@ -176,108 +173,95 @@ chat.scrollHeight;
 
 function falar(texto){
 
-
-speechSynthesis.cancel();
-
-
-
-let limpo =
-texto.replace(
-/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-""
-);
-
-
-
-let voz =
-new SpeechSynthesisUtterance(limpo);
-
-
+let voz=new SpeechSynthesisUtterance(texto);
 
 voz.lang="pt-BR";
 
-voz.rate=1;
-
 voz.pitch=1.2;
 
+voz.rate=1;
+
+let vozes=speechSynthesis.getVoices();
 
 
-let vozes =
-speechSynthesis.getVoices();
-
-
-
-let feminina =
-vozes.find(v =>
-v.lang.includes("pt")
+let feminina=vozes.find(v=>
+v.name.includes("Maria") ||
+v.name.includes("Google")
 );
 
 
-
-if(feminina){
-
+if(feminina)
 voz.voice=feminina;
-
-}
-
 
 
 speechSynthesis.speak(voz);
 
-
 }
 
 
 
 
 
+function pensar(pergunta){
+
+let p=pergunta.toLowerCase();
 
 
 
+// memória aprendida
 
-function pensar(msg){
+if(memoria[p]){
 
-
-
-let texto =
-msg.toLowerCase();
-
-
-
-if(texto.includes("seu nome"))
-
-return "Meu nome é Meli";
-
-
-
-
-if(texto.includes("quem criou você"))
-
-return "Eu fui criada pelo Luiz Benicio";
-
-
-
-
-if(texto.includes("o que você é"))
-
-return "Sou uma inteligência artificial que conversa e aprende";
-
-
-
-
-if(memoria[texto])
-
-return memoria[texto];
-
-
-
-return null;
-
+return memoria[p];
 
 }
 
 
 
+// criadora
+
+if(
+p.includes("quem criou") ||
+p.includes("criador")
+){
+
+return "Eu fui criada por Exity Dragon e Luiz Benicio ❤️";
+
+}
+
+
+
+// nome
+
+if(p.includes("seu nome")){
+
+return "Meu nome é Meli 💗";
+
+}
+
+
+
+// matemática
+
+
+try{
+
+if(/[0-9+\-*\/]/.test(p)){
+
+let resultado=eval(p);
+
+return "O resultado é "+resultado;
+
+}
+
+}catch(e){}
+
+
+
+
+return "Ainda não sei responder isso... Você pode me ensinar? ❤️";
+
+}
 
 
 
@@ -287,169 +271,57 @@ return null;
 function enviar(){
 
 
+let input=document.getElementById("texto");
 
-let caixa =
-document.getElementById("mensagem");
-
-
-
-let msg =
-caixa.value.trim();
+let mensagem=input.value;
 
 
+if(mensagem=="") return;
 
-if(msg==="")
-return;
 
+adicionar(mensagem,"user");
+
+
+input.value="";
 
 
 
-
-escrever(
-"👤 Você: "+msg
-);
+let resposta=pensar(mensagem);
 
 
 
+setTimeout(()=>{
 
 
-
-if(aprendendo){
-
-
-
-memoria[perguntaAprender]=msg;
-
-
-salvar();
-
-
-
-let resposta =
-"Aprendi! Vou lembrar disso 💗";
-
-
-
-escrever(
-"💗 Meli: "+resposta
-);
-
-
+adicionar(resposta,"meli");
 
 falar(resposta);
 
 
 
-aprendendo=false;
-
-perguntaAprender="";
-
-
-caixa.value="";
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-if(msg.toLowerCase()
-.includes("quero te ensinar")){
-
-
-let resposta =
-"Claro! Me diga o que devo aprender 💗";
-
-
-
-escrever(
-"💗 Meli: "+resposta
-);
-
-
-
-falar(resposta);
-
-
-
-aprendendo=true;
-
-
-caixa.value="";
-
-return;
-
-
-}
-
-
-
-
-
-
-
-let resposta =
-pensar(msg);
-
-
-
-
-
-if(resposta){
-
-
-
-escrever(
-"💗 Meli: "+resposta
-);
-
-
-
-falar(resposta);
+},500);
 
 
 
 }
 
-else{
-
-
-let resposta =
-"Eu ainda não sei isso. Me ensine a resposta 💗";
-
-
-escrever(
-"💗 Meli: "+resposta
-);
 
 
 
-falar(resposta);
+
+// aprendizado
+
+document.addEventListener("keydown",function(e){
 
 
+if(e.key=="Enter"){
 
-perguntaAprender=msg;
-
-
-aprendendo=true;
-
-
+enviar();
 
 }
 
 
-
-caixa.value="";
-
-
-}
+});
 
 
 
@@ -457,93 +329,48 @@ caixa.value="";
 
 
 
+// MICROFONE
 
 
-// SISTEMA DE VOZ CORRIGIDO
+function ouvir(){
 
 
-function voz(){
-
-
-
-let Reconhecimento =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-
-
-if(!Reconhecimento){
-
-
-alert(
-"Seu navegador não suporta reconhecimento de voz"
-);
-
-
-return;
-
-}
-
-
-
-
-
-
-if(!ouvindo){
-
-
-
-reconhecimento =
-new Reconhecimento();
+let reconhecimento =
+new(window.SpeechRecognition ||
+window.webkitSpeechRecognition)();
 
 
 
 reconhecimento.lang="pt-BR";
 
 
-
-reconhecimento.continuous=true;
-
-
-
-reconhecimento.interimResults=true;
-
-
-
 reconhecimento.start();
 
 
 
-ouvindo=true;
+reconhecimento.onstart=function(){
 
+alert("🎤 Meli está ouvindo...");
 
-
-escrever(
-"🎤 Meli: Estou ouvindo..."
-);
-
-
-
+}
 
 
 
 reconhecimento.onresult=function(event){
 
 
-
-let texto="";
-
-
-
-for(
-let i=event.resultIndex;
-i<event.results.length;
-i++
-){
+let texto=
+event.results[0][0].transcript;
 
 
-texto +=
-event.results[i][0].transcript;
+document.getElementById("texto").value=texto;
+
+
+enviar();
+
+
+}
+
 
 
 }
@@ -551,66 +378,16 @@ event.results[i][0].transcript;
 
 
 
-document.getElementById("mensagem").value =
-texto;
 
-
-
-};
-
-
-
-
-
-
-reconhecimento.onerror=function(){
-
-
-ouvindo=false;
-
-
-escrever(
-"❌ Não consegui ouvir"
+adicionar(
+"Olá! Eu sou a Meli 💗<br>Fale comigo pelo texto ou pelo microfone 🎤",
+"meli"
 );
-
-
-};
-
-
-
-
-
-
-}
-
-else{
-
-
-ouvindo=false;
-
-
-
-reconhecimento.stop();
-
-
-
-escrever(
-"✅ Texto capturado"
-);
-
-
-}
-
-
-}
-
-
 
 
 </script>
 
 
 </body>
-
 </html>
 
