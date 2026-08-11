@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,94 +11,115 @@
 
 body{
     margin:0;
-    font-family:Arial;
-    background:linear-gradient(135deg,#ff8fd8,#ff4fa3);
     height:100vh;
+    background:linear-gradient(135deg,#ff8bd8,#ff3fa4);
     display:flex;
     justify-content:center;
     align-items:center;
+    font-family:Arial;
 }
 
+
 .app{
+
     width:95%;
     max-width:420px;
     height:90vh;
     background:white;
     border-radius:25px;
+    overflow:hidden;
     display:flex;
     flex-direction:column;
-    overflow:hidden;
-    box-shadow:0 0 30px #ff1493;
+    box-shadow:0 0 30px pink;
+
 }
+
 
 
 header{
-    background:#ff5db1;
+
+    background:#ff4fa3;
     color:white;
-    text-align:center;
     padding:20px;
+    text-align:center;
     font-size:25px;
     font-weight:bold;
+
 }
+
 
 
 #chat{
+
     flex:1;
     padding:15px;
-    overflow-y:auto;
+    overflow:auto;
+
 }
 
 
+
 .msg{
+
     padding:12px;
     margin:10px;
     border-radius:20px;
     max-width:80%;
+
 }
 
 
-.user{
-    background:#ffc1e5;
+.usuario{
+
+    background:#ffc6e8;
     margin-left:auto;
+
 }
+
 
 
 .meli{
-    background:#ff5db1;
+
+    background:#ff4fa3;
     color:white;
+
 }
+
 
 
 .area{
+
     display:flex;
     padding:10px;
     gap:5px;
+
 }
+
 
 
 input{
+
     flex:1;
     border-radius:20px;
-    border:2px solid #ff5db1;
+    border:2px solid #ff4fa3;
     padding:12px;
-    outline:none;
+
 }
+
 
 
 button{
-    border:none;
-    background:#ff5db1;
-    color:white;
-    border-radius:50%;
+
     width:45px;
     height:45px;
+    border:none;
+    border-radius:50%;
+    background:#ff4fa3;
+    color:white;
     font-size:20px;
+
 }
 
-
-button:hover{
-    transform:scale(1.1);
-}
 
 </style>
 
@@ -109,26 +131,33 @@ button:hover{
 
 <div class="app">
 
+
 <header>
 💗 Meli AI
 </header>
 
 
+
 <div id="chat"></div>
+
 
 
 <div class="area">
 
-<input id="texto" placeholder="Digite uma mensagem...">
+<input id="texto" placeholder="Digite algo...">
+
 
 <button onclick="enviar()">➤</button>
 
-<button onclick="ouvir()">🎤</button>
+
+<button onclick="microfone()">🎤</button>
+
 
 </div>
 
 
 </div>
+
 
 
 
@@ -136,34 +165,24 @@ button:hover{
 <script>
 
 
-let memoria = JSON.parse(localStorage.getItem("meli_memoria")) || {};
+let chat=document.getElementById("chat");
 
 
 
-function salvar(){
+function mensagem(txt,tipo){
 
-localStorage.setItem(
-"meli_memoria",
-JSON.stringify(memoria)
-);
-
-}
-
-
-
-
-function adicionar(texto,tipo){
 
 let div=document.createElement("div");
 
 div.className="msg "+tipo;
 
-div.innerHTML=texto;
+div.innerHTML=txt;
 
-document.getElementById("chat").appendChild(div);
+chat.appendChild(div);
 
-document.getElementById("chat").scrollTop =
-document.getElementById("chat").scrollHeight;
+
+chat.scrollTop=chat.scrollHeight;
+
 
 }
 
@@ -171,30 +190,51 @@ document.getElementById("chat").scrollHeight;
 
 
 
-function falar(texto){
+// VOZ DA MELI
 
-let voz=new SpeechSynthesisUtterance(texto);
 
-voz.lang="pt-BR";
+function falar(txt){
 
-voz.pitch=1.2;
 
-voz.rate=1;
+let fala=new SpeechSynthesisUtterance(txt);
+
+
+fala.lang="pt-BR";
+
+
+fala.pitch=1.3; // voz mais feminina
+
+
+fala.rate=1;
+
+
 
 let vozes=speechSynthesis.getVoices();
 
 
-let feminina=vozes.find(v=>
-v.name.includes("Maria") ||
-v.name.includes("Google")
+
+let vozFeminina=vozes.find(v=>
+
+v.lang.includes("pt") &&
+
+(v.name.includes("Maria") ||
+v.name.includes("Female") ||
+v.name.includes("Google"))
+
 );
 
 
-if(feminina)
-voz.voice=feminina;
+
+if(vozFeminina){
+
+fala.voice=vozFeminina;
+
+}
 
 
-speechSynthesis.speak(voz);
+
+speechSynthesis.speak(fala);
+
 
 }
 
@@ -202,28 +242,35 @@ speechSynthesis.speak(voz);
 
 
 
+// INTELIGENCIA DA MELI
+
+
 function pensar(pergunta){
+
 
 let p=pergunta.toLowerCase();
 
 
 
-// memória aprendida
+if(p.includes("oi") ||
+p.includes("olá")){
 
-if(memoria[p]){
-
-return memoria[p];
+return "Olá 💗 Eu sou a Meli, sua inteligência artificial.";
 
 }
 
 
 
-// criadora
+if(p.includes("seu nome")){
 
-if(
-p.includes("quem criou") ||
-p.includes("criador")
-){
+return "Meu nome é Meli 💕";
+
+}
+
+
+
+if(p.includes("criou") ||
+p.includes("criador")){
 
 return "Eu fui criada por Exity Dragon e Luiz Benicio ❤️";
 
@@ -231,39 +278,30 @@ return "Eu fui criada por Exity Dragon e Luiz Benicio ❤️";
 
 
 
-// nome
-
-if(p.includes("seu nome")){
-
-return "Meu nome é Meli 💗";
-
-}
-
-
-
-// matemática
+// calculadora
 
 
 try{
 
+
 if(/[0-9+\-*\/]/.test(p)){
 
-let resultado=eval(p);
 
-return "O resultado é "+resultado;
+return "O resultado é "+eval(p);
+
 
 }
+
 
 }catch(e){}
 
 
 
+return "Ainda estou aprendendo isso 💗";
 
-return "Ainda não sei responder isso... Você pode me ensinar? ❤️";
+
 
 }
-
-
 
 
 
@@ -273,27 +311,30 @@ function enviar(){
 
 let input=document.getElementById("texto");
 
-let mensagem=input.value;
+
+let texto=input.value;
 
 
-if(mensagem=="") return;
+if(texto=="")return;
 
 
-adicionar(mensagem,"user");
+
+mensagem(texto,"usuario");
 
 
 input.value="";
 
 
 
-let resposta=pensar(mensagem);
+let resposta=pensar(texto);
 
 
 
 setTimeout(()=>{
 
 
-adicionar(resposta,"meli");
+mensagem(resposta,"meli");
+
 
 falar(resposta);
 
@@ -309,78 +350,95 @@ falar(resposta);
 
 
 
-// aprendizado
-
-document.addEventListener("keydown",function(e){
-
-
-if(e.key=="Enter"){
-
-enviar();
-
-}
-
-
-});
-
-
-
-
-
-
 
 // MICROFONE
 
 
-function ouvir(){
-
-
-let reconhecimento =
-new(window.SpeechRecognition ||
-window.webkitSpeechRecognition)();
+function microfone(){
 
 
 
-reconhecimento.lang="pt-BR";
+let SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
 
 
-reconhecimento.start();
 
+if(!SpeechRecognition){
 
+alert("Seu navegador não suporta voz");
 
-reconhecimento.onstart=function(){
-
-alert("🎤 Meli está ouvindo...");
+return;
 
 }
 
 
 
-reconhecimento.onresult=function(event){
+let ouvir=new SpeechRecognition();
 
 
-let texto=
+
+ouvir.lang="pt-BR";
+
+
+
+ouvir.continuous=false;
+
+
+
+ouvir.start();
+
+
+
+ouvir.onstart=function(){
+
+console.log("Meli ouvindo...");
+
+}
+
+
+
+ouvir.onresult=function(event){
+
+
+
+let texto =
 event.results[0][0].transcript;
 
+
+
+// coloca o texto no chat
 
 document.getElementById("texto").value=texto;
 
 
+
+// envia sozinho
+
 enviar();
 
 
-}
-
-
 
 }
 
 
 
+ouvir.onerror=function(){
+
+alert("Não consegui ouvir, tente novamente");
+
+}
 
 
-adicionar(
-"Olá! Eu sou a Meli 💗<br>Fale comigo pelo texto ou pelo microfone 🎤",
+}
+
+
+
+
+
+
+mensagem(
+"Oi 💗 Eu sou a Meli! Clique no 🎤 e fale comigo.",
 "meli"
 );
 
@@ -390,4 +448,5 @@ adicionar(
 
 </body>
 </html>
+
 
