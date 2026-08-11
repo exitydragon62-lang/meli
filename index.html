@@ -1,137 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meli IA 💗</title>
 
-<title>Meli AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 <style>
 
-*{
-box-sizing:border-box;
-}
-
-
 body{
-
-margin:0;
-height:100vh;
-background:linear-gradient(135deg,#ff8bd8,#ff3b9d);
+background:#30051f;
+font-family:Arial;
 display:flex;
 justify-content:center;
 align-items:center;
-font-family:Arial;
-
+height:100vh;
+margin:0;
 }
-
 
 
 .app{
-
-width:95%;
+width:90%;
 max-width:430px;
-height:90vh;
-background:white;
-border-radius:25px;
-overflow:hidden;
-display:flex;
-flex-direction:column;
-box-shadow:0 0 30px #ff1493;
-
-}
-
-
-
-header{
-
-background:#ff4fa3;
-color:white;
+background:#ffb6d9;
 padding:20px;
-font-size:26px;
-font-weight:bold;
-text-align:center;
-
+border-radius:25px;
 }
 
+
+h1{
+text-align:center;
+color:#ff1475;
+}
 
 
 #chat{
-
-flex:1;
-overflow-y:auto;
+background:white;
+height:360px;
+overflow:auto;
 padding:15px;
-
+border-radius:15px;
 }
-
-
-
-.msg{
-
-padding:12px 15px;
-border-radius:20px;
-margin:10px;
-max-width:80%;
-
-}
-
-
-
-.usuario{
-
-background:#ffd0eb;
-margin-left:auto;
-
-}
-
-
-
-.meli{
-
-background:#ff4fa3;
-color:white;
-
-}
-
-
-
-.area{
-
-display:flex;
-gap:5px;
-padding:10px;
-
-}
-
 
 
 input{
-
-flex:1;
-border-radius:20px;
-border:2px solid #ff4fa3;
+width:58%;
 padding:12px;
-font-size:16px;
-
+border-radius:10px;
+border:0;
 }
-
 
 
 button{
-
-width:45px;
-height:45px;
-border:none;
-border-radius:50%;
-background:#ff4fa3;
+padding:12px;
+border:0;
+border-radius:10px;
+background:#ff4d9d;
 color:white;
-font-size:20px;
-
 }
-
 
 
 </style>
@@ -145,30 +73,37 @@ font-size:20px;
 <div class="app">
 
 
-<header>
-💗 Meli AI
-</header>
+<h1>💗 Meli IA</h1>
 
 
+<div id="chat">
 
-<div id="chat"></div>
-
-
-
-<div class="area">
-
-<input id="texto" placeholder="Fale comigo...">
-
-<button onclick="enviar()">➤</button>
-
-<button onclick="microfone()">🎤</button>
+💗 Meli:
+<br>
+Olá! Eu sou a Meli.
+<br>
+Criada por Luiz Benicio ✨
 
 </div>
 
 
+<br>
+
+
+<input id="mensagem" placeholder="Digite ou fale...">
+
+
+<button onclick="enviar()">
+Enviar
+</button>
+
+
+<button onclick="ouvir()">
+🎤
+</button>
+
 
 </div>
-
 
 
 
@@ -176,51 +111,32 @@ font-size:20px;
 <script>
 
 
-let chat=document.getElementById("chat");
-
-
-// MEMÓRIA
-
 let memoria =
-JSON.parse(localStorage.getItem("meli_memoria")) || {};
+JSON.parse(localStorage.getItem("meli_memoria"))
+|| {};
 
 
+let aprendendo=false;
 
-let vozes=[];
-
-
-
-function carregarVozes(){
-
-vozes=speechSynthesis.getVoices();
-
-}
+let perguntaEnsinar="";
 
 
-speechSynthesis.onvoiceschanged=carregarVozes;
+let ouvindo=false;
 
-carregarVozes();
+let reconhecimento;
 
 
 
 
 
 
-function adicionar(texto,tipo){
 
+function salvar(){
 
-let div=document.createElement("div");
-
-div.className="msg "+tipo;
-
-div.innerHTML=texto;
-
-
-chat.appendChild(div);
-
-
-chat.scrollTop=chat.scrollHeight;
-
+localStorage.setItem(
+"meli_memoria",
+JSON.stringify(memoria)
+);
 
 }
 
@@ -228,10 +144,6 @@ chat.scrollTop=chat.scrollHeight;
 
 
 
-
-
-
-// VOZ DA MELI
 
 
 function falar(texto){
@@ -241,30 +153,40 @@ speechSynthesis.cancel();
 
 
 
+let limpo =
+texto.replace(
+/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+""
+);
+
+
+
 let fala =
-new SpeechSynthesisUtterance(texto);
+new SpeechSynthesisUtterance(limpo);
 
 
 
 fala.lang="pt-BR";
 
-fala.pitch=1.4;
+fala.rate=1;
 
-fala.rate=0.9;
+fala.pitch=1.1;
+
+
+
+let vozes =
+speechSynthesis.getVoices();
 
 
 
 let feminina =
-vozes.find(v=>
-
+vozes.find(v =>
 v.lang.includes("pt") &&
-
 (
-v.name.includes("Maria") ||
-v.name.includes("Google") ||
-v.name.includes("Luciana")
+v.name.toLowerCase().includes("female") ||
+v.name.toLowerCase().includes("maria") ||
+v.name.toLowerCase().includes("google")
 )
-
 );
 
 
@@ -277,12 +199,7 @@ fala.voice=feminina;
 
 
 
-setTimeout(()=>{
-
 speechSynthesis.speak(fala);
-
-},300);
-
 
 
 }
@@ -294,177 +211,61 @@ speechSynthesis.speak(fala);
 
 
 
-function salvar(){
+function escrever(texto){
 
 
-localStorage.setItem(
-"meli_memoria",
-JSON.stringify(memoria)
+let chat =
+document.getElementById("chat");
+
+
+
+chat.innerHTML +=
+"<br><br>"+texto;
+
+
+
+chat.scrollTop =
+chat.scrollHeight;
+
+
+}
+
+
+
+
+
+
+
+function calcular(texto){
+
+
+let conta =
+texto.match(
+/\d+\s*[\+\-\*\/]\s*\d+/
 );
 
 
-}
 
-
-
-
-
-
-
-
-
-function pensar(pergunta){
-
-
-let p=pergunta.toLowerCase();
-
-
-
-
-
-// ENSINAR
-
-
-if(p.startsWith("ensine:")){
-
-
-let dados =
-p.replace("ensine:","").trim();
-
-
-
-let partes =
-dados.split("=");
-
-
-
-if(partes.length==2){
-
-
-
-let perguntaNova =
-partes[0].trim();
-
-
-
-let respostaNova =
-partes[1].trim();
-
-
-
-memoria[perguntaNova]=respostaNova;
-
-
-
-salvar();
-
-
-
-return "Aprendi isso 💗 Obrigada por me ensinar!";
-
-
-}
-
-
-return "Use assim:<br>ensine: pergunta = resposta";
-
-
-}
-
-
-
-
-
-
-
-// MEMORIA
-
-
-
-for(let pergunta in memoria){
-
-
-if(p.includes(pergunta)){
-
-
-return memoria[pergunta];
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-if(p.includes("oi") ||
-p.includes("olá")){
-
-
-return "Olá 💗 Eu sou a Meli!";
-
-
-}
-
-
-
-
-
-
-if(p.includes("seu nome")){
-
-
-return "Meu nome é Meli 💕";
-
-
-}
-
-
-
-
-
-
-if(p.includes("quem criou")){
-
-
-return "Eu fui criada por Exity Dragon e Luiz Benicio ❤️";
-
-
-}
-
-
-
-
-
-
-
-
-// MATEMÁTICA
-
+if(conta){
 
 
 try{
 
+return "O resultado é "
++eval(conta[0]);
 
-if(/[0-9+\-*\/]/.test(p)){
+}catch{}
 
-
-
-let resultado=eval(p);
-
-
-
-return "O resultado é "+resultado;
 
 
 }
 
 
-}catch(e){}
+
+return null;
+
+
+}
 
 
 
@@ -472,8 +273,60 @@ return "O resultado é "+resultado;
 
 
 
-return "Eu ainda não sei isso 😢 Você pode me ensinar usando: ensine: pergunta = resposta";
 
+
+function pensar(msg){
+
+
+
+let texto =
+msg.toLowerCase();
+
+
+
+let conta =
+calcular(texto);
+
+
+
+if(conta)
+
+return conta;
+
+
+
+
+
+if(texto.includes("seu nome"))
+
+return "Meu nome é Meli";
+
+
+
+
+if(texto.includes("quem criou você"))
+
+return "Eu fui criada pelo Luiz Benicio";
+
+
+
+
+if(texto.includes("o que você é"))
+
+return "Sou uma inteligência artificial que conversa e aprende";
+
+
+
+
+if(memoria[texto])
+
+return memoria[texto];
+
+
+
+
+
+return null;
 
 
 }
@@ -490,71 +343,70 @@ function enviar(){
 
 
 
-let campo=document.getElementById("texto");
-
-
-let texto=campo.value;
-
-
-
-if(texto.trim()=="") return;
+let caixa =
+document.getElementById("mensagem");
 
 
 
-adicionar(texto,"usuario");
-
-
-campo.value="";
-
-
-
-let resposta= pensar(texto);
+let msg =
+caixa.value.trim();
 
 
 
-setTimeout(()=>{
 
 
-adicionar(resposta,"meli");
+if(msg=="")
+return;
+
+
+
+
+
+escrever(
+"👤 Você: "+msg
+);
+
+
+
+
+
+
+
+
+
+if(aprendendo){
+
+
+
+memoria[perguntaEnsinar]=msg;
+
+
+salvar();
+
+
+
+let resposta =
+"Aprendi! Vou lembrar disso";
+
+
+
+escrever(
+"💗 Meli: "+resposta
+);
+
 
 
 falar(resposta);
 
 
 
-},500);
+aprendendo=false;
+
+perguntaEnsinar="";
 
 
 
-}
-
-
-
-
-
-
-
-
-
-
-// MICROFONE
-
-
-
-function microfone(){
-
-
-
-let SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-
-
-if(!SpeechRecognition){
-
-
-alert("Abra pelo Google Chrome para usar o microfone");
+caixa.value="";
 
 
 return;
@@ -564,68 +416,39 @@ return;
 
 
 
-let ouvir =
-new SpeechRecognition();
-
-
-
-ouvir.lang="pt-BR";
-
-ouvir.continuous=false;
-
-
-
-ouvir.start();
 
 
 
 
 
-ouvir.onstart=function(){
+
+if(msg.toLowerCase()
+.includes("quero te ensinar")){
 
 
-console.log("Meli ouvindo...");
-
-
-};
-
-
-
-
-
-ouvir.onresult=function(event){
+let resposta =
+"Claro! Me diga o que devo aprender";
 
 
 
-let texto =
-event.results[0][0].transcript;
+escrever(
+"💗 Meli: "+resposta
+);
 
 
 
-document.getElementById("texto").value=texto;
+falar(resposta);
 
 
 
-// ENVIA AUTOMATICAMENTE
-
-enviar();
+aprendendo=true;
 
 
 
-};
+caixa.value="";
 
 
-
-
-
-ouvir.onerror=function(){
-
-
-alert("Não consegui entender o áudio");
-
-
-};
-
+return;
 
 
 }
@@ -636,10 +459,171 @@ alert("Não consegui entender o áudio");
 
 
 
-adicionar(
-"Oi 💗 Eu sou a Meli.<br>Clique no 🎤 e fale comigo!",
-"meli"
+
+
+
+let resposta =
+pensar(msg);
+
+
+
+
+
+if(resposta){
+
+
+
+escrever(
+"💗 Meli: "+resposta
 );
+
+
+
+falar(resposta);
+
+
+
+}
+
+
+
+else{
+
+
+let resposta =
+"Eu ainda não sei isso. Se quiser me ensinar, diga: quero te ensinar";
+
+
+
+escrever(
+"💗 Meli: "+resposta
+);
+
+
+
+falar(resposta);
+
+
+
+perguntaEnsinar=msg;
+
+
+
+}
+
+
+
+
+
+caixa.value="";
+
+
+}
+
+
+
+
+
+
+
+
+
+function ouvir(){
+
+
+
+if(!ouvindo){
+
+
+
+reconhecimento =
+new(
+window.SpeechRecognition ||
+window.webkitSpeechRecognition
+);
+
+
+
+reconhecimento.lang="pt-BR";
+
+reconhecimento.continuous=true;
+
+
+
+reconhecimento.start();
+
+
+
+ouvindo=true;
+
+
+
+escrever(
+"🎤 Meli: Estou ouvindo..."
+);
+
+
+
+
+
+reconhecimento.onresult=function(event){
+
+
+
+let texto="";
+
+
+
+for(
+let i=event.resultIndex;
+i<event.results.length;
+i++
+){
+
+texto +=
+event.results[i][0].transcript;
+
+}
+
+
+
+document.getElementById("mensagem").value =
+texto;
+
+
+
+};
+
+
+
+}
+
+
+
+else{
+
+
+
+reconhecimento.stop();
+
+
+ouvindo=false;
+
+
+
+setTimeout(()=>{
+
+enviar();
+
+},500);
+
+
+
+}
+
+
+
+}
 
 
 
@@ -649,4 +633,3 @@ adicionar(
 </body>
 
 </html>
-
