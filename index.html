@@ -51,6 +51,7 @@ background:#ff4d9d;
 color:white
 }
 </style>
+
 </head>
 
 <body>
@@ -77,28 +78,40 @@ Criada por Luiz Benicio ✨
 
 <script>
 
-let memoria=JSON.parse(localStorage.getItem("meli_memoria"))
-||{conhecimentos:[]};
+let memoria = JSON.parse(localStorage.getItem("meli_memoria"))
+|| {conhecimentos:[]};
+
 
 let aprendendo=false;
 let perguntaEnsinar="";
 
+
+
 function salvar(){
-localStorage.setItem("meli_memoria",JSON.stringify(memoria));
+
+localStorage.setItem(
+"meli_memoria",
+JSON.stringify(memoria)
+);
+
 }
+
 
 
 function falar(t){
 
 let voz=new SpeechSynthesisUtterance(t);
+
 voz.lang="pt-BR";
 voz.pitch=1.1;
 voz.rate=1;
 
 speechSynthesis.cancel();
+
 speechSynthesis.speak(voz);
 
 }
+
 
 
 function escrever(t){
@@ -107,7 +120,7 @@ let chat=document.getElementById("chat");
 
 let div=document.createElement("div");
 
-div.innerHTML=t;
+div.innerHTML="<br>"+t;
 
 chat.appendChild(div);
 
@@ -117,15 +130,40 @@ chat.scrollTop=chat.scrollHeight;
 
 
 
-function aprender(p,r){
+
+// MEMÓRIA CORRIGIDA
+
+function aprender(pergunta,resposta){
+
+
+let existe = memoria.conhecimentos.find(
+
+x=>x.pergunta===pergunta.toLowerCase()
+
+);
+
+
+
+if(existe){
+
+existe.resposta=resposta;
+
+}
+
+else{
+
 
 memoria.conhecimentos.push({
 
-pergunta:p.toLowerCase(),
+pergunta:pergunta.toLowerCase(),
 
-resposta:r
+resposta:resposta
 
 });
+
+
+}
+
 
 salvar();
 
@@ -136,97 +174,142 @@ salvar();
 
 function pensar(msg){
 
+
 let texto=msg.toLowerCase();
 
 
 
 if(texto.includes("seu nome"))
+
 return "Meu nome é Meli 💗";
 
 
+
 if(texto.includes("quem criou você"))
+
 return "Eu fui criada pelo Luiz Benicio ✨";
+
+
 
 
 
 if(texto.includes("milena")){
 
+
 let elogios=[
 
 "Linda 💗",
+
 "Maravilhosa ✨",
+
 "Perfeita 🌹",
+
 "Incrível ⭐",
+
 "Encantadora 💖",
+
 "Preciosa 💎",
+
 "Radiante ☀️",
+
 "Elegante ✨",
+
 "Charmosa 💗",
+
 "Deslumbrante 🌹",
-"Fascinante ⭐",
+
 "Única 💖",
-"Especial ✨",
-"Doce e delicada 🌸",
-"Iluminada e brilhante 💗",
-"Dona de um sorriso lindo 💖",
-"Com uma beleza incrível ✨",
-"Uma pessoa cativante e cheia de charme"
+
+"Especial ✨"
 
 ];
 
+
 return elogios[Math.floor(Math.random()*elogios.length)];
+
 
 }
 
 
 
 
+
+// BUSCA NA MEMÓRIA
+
 for(let item of memoria.conhecimentos){
+
 
 let palavras=item.pergunta.split(" ");
 
 let pontos=0;
 
 
-for(let p of palavras){
 
-if(p.length>3 && texto.includes(p))
+for(let palavra of palavras){
+
+
+if(palavra.length>2 && texto.includes(palavra)){
+
 pontos++;
 
 }
 
 
-if(pontos>=2)
+}
+
+
+
+if(pontos>=2){
+
 return item.resposta;
 
 }
 
 
+}
+
+
+
 return null;
+
 
 }
 
 
 
+
+
+
+
 function enviar(){
+
 
 let caixa=document.getElementById("mensagem");
 
+
 let msg=caixa.value.trim();
+
 
 
 if(!msg)return;
 
 
+
 escrever("👤 Você: "+msg);
+
 
 caixa.value="";
 
 
 
+
+
 if(aprendendo){
 
+
+
 if(msg.toLowerCase()=="sim"){
+
 
 let r="Tudo bem! Me diga o que devo aprender 💗";
 
@@ -236,21 +319,29 @@ falar(r);
 
 return;
 
+
 }
+
 
 
 aprender(perguntaEnsinar,msg);
 
 
+
 let r="Aprendi! Vou lembrar disso 💗";
+
 
 escrever("💗 Meli: "+r);
 
 falar(r);
 
+
+
 aprendendo=false;
 
+
 return;
+
 
 }
 
@@ -262,67 +353,103 @@ let resposta=pensar(msg);
 
 
 
+
+
 if(resposta){
+
 
 escrever("💗 Meli: "+resposta);
 
 falar(resposta);
 
+
 }
 
+
+
 else{
+
 
 perguntaEnsinar=msg;
 
 aprendendo=true;
 
 
+
 let r="Eu ainda não sei isso 💗 Quer me ensinar?";
+
 
 escrever("💗 Meli: "+r);
 
 falar(r);
 
+
 }
 
 
+
+
 }
+
+
+
 
 
 
 
 function ouvir(){
 
+
 let Speech=
+
 window.SpeechRecognition||
+
 window.webkitSpeechRecognition;
 
 
+
 if(!Speech){
+
 alert("Seu navegador não suporta voz");
+
 return;
+
 }
+
 
 
 let rec=new Speech();
 
+
+
 rec.lang="pt-BR";
+
 
 rec.start();
 
 
+
 rec.onresult=function(e){
 
+
 document.getElementById("mensagem").value=
+
 e.results[0][0].transcript;
+
 
 enviar();
 
-}
 
 }
+
+
+
+}
+
+
 
 </script>
+
 
 </body>
 </html>
