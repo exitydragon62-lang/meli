@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>Meli IA 💗</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <style>
 body{
@@ -12,7 +12,7 @@ display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-margin:0;
+margin:0
 }
 
 .app{
@@ -20,12 +20,12 @@ width:90%;
 max-width:430px;
 background:#ffb6d9;
 padding:20px;
-border-radius:25px;
+border-radius:25px
 }
 
 h1{
 text-align:center;
-color:#ff1475;
+color:#ff1475
 }
 
 #chat{
@@ -33,14 +33,14 @@ background:white;
 height:360px;
 overflow:auto;
 padding:15px;
-border-radius:15px;
+border-radius:15px
 }
 
 input{
 width:55%;
 padding:12px;
-border-radius:10px;
 border:0;
+border-radius:10px
 }
 
 button{
@@ -48,7 +48,7 @@ padding:12px;
 border:0;
 border-radius:10px;
 background:#ff4d9d;
-color:white;
+color:white
 }
 </style>
 </head>
@@ -60,10 +60,8 @@ color:white;
 <h1>💗 Meli IA</h1>
 
 <div id="chat">
-💗 Meli:
-<br>
-Olá! Eu sou a Meli.
-<br>
+💗 Meli:<br>
+Olá! Eu sou a Meli.<br>
 Criada por Luiz Benicio ✨
 </div>
 
@@ -84,40 +82,32 @@ let memoria=JSON.parse(localStorage.getItem("meli_memoria"))
 
 let aprendendo=false;
 let perguntaEnsinar="";
-let ouvindo=false;
-let reconhecimento;
-
-
 
 function salvar(){
-localStorage.setItem(
-"meli_memoria",
-JSON.stringify(memoria)
-);
+localStorage.setItem("meli_memoria",JSON.stringify(memoria));
 }
 
 
+function falar(t){
 
-function aprender(p,r){
+let voz=new SpeechSynthesisUtterance(t);
+voz.lang="pt-BR";
+voz.pitch=1.1;
+voz.rate=1;
 
-memoria.conhecimentos.push({
-pergunta:p.toLowerCase(),
-resposta:r
-});
-
-salvar();
+speechSynthesis.cancel();
+speechSynthesis.speak(voz);
 
 }
 
 
-
-function escrever(txt){
+function escrever(t){
 
 let chat=document.getElementById("chat");
 
 let div=document.createElement("div");
 
-div.innerHTML=txt;
+div.innerHTML=t;
 
 chat.appendChild(div);
 
@@ -127,36 +117,17 @@ chat.scrollTop=chat.scrollHeight;
 
 
 
-function falar(txt){
+function aprender(p,r){
 
-let voz=new SpeechSynthesisUtterance(txt);
+memoria.conhecimentos.push({
 
-voz.lang="pt-BR";
-voz.rate=1;
-voz.pitch=1.1;
+pergunta:p.toLowerCase(),
 
-speechSynthesis.cancel();
-speechSynthesis.speak(voz);
+resposta:r
 
-}
+});
 
-
-
-
-function calcular(t){
-
-let c=t.match(/\d+\s*[\+\-\*\/]\s*\d+/);
-
-if(c){
-
-try{
-return "O resultado é "+eval(c[0]);
-}
-catch{}
-
-}
-
-return null;
+salvar();
 
 }
 
@@ -169,15 +140,8 @@ let texto=msg.toLowerCase();
 
 
 
-let conta=calcular(texto);
-
-if(conta)return conta;
-
-
-
 if(texto.includes("seu nome"))
 return "Meu nome é Meli 💗";
-
 
 
 if(texto.includes("quem criou você"))
@@ -185,48 +149,37 @@ return "Eu fui criada pelo Luiz Benicio ✨";
 
 
 
-if(texto.includes("o que você é"))
-return "Sou uma inteligência artificial que conversa e aprende";
-
-
-
-
-// MILENA 💗
-
 if(texto.includes("milena")){
 
 let elogios=[
 
-"Você é linda 💗",
-"Você é maravilhosa ✨",
-"Você é perfeita 🌹",
-"Você é incrível ⭐",
-"Você é encantadora 💖",
-"Você é preciosa 💎",
-"Você é radiante ☀️",
-"Você é elegante ✨",
-"Você é charmosa 💗",
-"Você é deslumbrante 🌹",
-"Você é fascinante ⭐",
-"Você é única 💖",
-"Você é especial ✨",
-"Você é doce e delicada 🌸",
-"Você é iluminada e brilhante 💗",
-"Você é dona de um sorriso lindo 💖",
-"Você tem uma beleza incrível ✨",
-"Você é uma pessoa cativante"
+"Linda 💗",
+"Maravilhosa ✨",
+"Perfeita 🌹",
+"Incrível ⭐",
+"Encantadora 💖",
+"Preciosa 💎",
+"Radiante ☀️",
+"Elegante ✨",
+"Charmosa 💗",
+"Deslumbrante 🌹",
+"Fascinante ⭐",
+"Única 💖",
+"Especial ✨",
+"Doce e delicada 🌸",
+"Iluminada e brilhante 💗",
+"Dona de um sorriso lindo 💖",
+"Com uma beleza incrível ✨",
+"Uma pessoa cativante e cheia de charme"
 
 ];
 
-return elogios[
-Math.floor(Math.random()*elogios.length)
-];
+return elogios[Math.floor(Math.random()*elogios.length)];
 
 }
 
 
 
-// MEMÓRIA
 
 for(let item of memoria.conhecimentos){
 
@@ -262,7 +215,7 @@ let caixa=document.getElementById("mensagem");
 let msg=caixa.value.trim();
 
 
-if(msg=="")return;
+if(!msg)return;
 
 
 escrever("👤 Você: "+msg);
@@ -273,7 +226,21 @@ caixa.value="";
 
 if(aprendendo){
 
+if(msg.toLowerCase()=="sim"){
+
+let r="Tudo bem! Me diga o que devo aprender 💗";
+
+escrever("💗 Meli: "+r);
+
+falar(r);
+
+return;
+
+}
+
+
 aprender(perguntaEnsinar,msg);
+
 
 let r="Aprendi! Vou lembrar disso 💗";
 
@@ -288,20 +255,6 @@ return;
 }
 
 
-
-if(msg.toLowerCase().includes("quero te ensinar")){
-
-let r="Claro! Me diga o que devo aprender";
-
-escrever("💗 Meli: "+r);
-
-falar(r);
-
-aprendendo=true;
-
-return;
-
-}
 
 
 
@@ -319,18 +272,22 @@ falar(resposta);
 
 else{
 
-let r="Ainda não sei isso. Diga 'quero te ensinar' para me ensinar.";
+perguntaEnsinar=msg;
+
+aprendendo=true;
+
+
+let r="Eu ainda não sei isso 💗 Quer me ensinar?";
 
 escrever("💗 Meli: "+r);
 
 falar(r);
 
-perguntaEnsinar=msg;
-
 }
 
 
 }
+
 
 
 
@@ -342,29 +299,26 @@ window.webkitSpeechRecognition;
 
 
 if(!Speech){
-
-alert("Navegador sem suporte a voz");
-
+alert("Seu navegador não suporta voz");
 return;
-
 }
 
 
-reconhecimento=new Speech();
+let rec=new Speech();
 
-reconhecimento.lang="pt-BR";
+rec.lang="pt-BR";
 
-reconhecimento.start();
+rec.start();
 
 
-reconhecimento.onresult=function(e){
+rec.onresult=function(e){
 
 document.getElementById("mensagem").value=
 e.results[0][0].transcript;
 
 enviar();
 
-};
+}
 
 }
 
