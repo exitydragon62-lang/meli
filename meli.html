@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Meli IA 💗</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -89,6 +88,7 @@ let ouvindo=false;
 let reconhecimento;
 
 
+
 function salvar(){
 localStorage.setItem(
 "meli_memoria",
@@ -97,11 +97,12 @@ JSON.stringify(memoria)
 }
 
 
-function aprender(pergunta,resposta){
+
+function aprender(p,r){
 
 memoria.conhecimentos.push({
-pergunta:pergunta.toLowerCase(),
-resposta:resposta
+pergunta:p.toLowerCase(),
+resposta:r
 });
 
 salvar();
@@ -110,12 +111,29 @@ salvar();
 
 
 
-function falar(texto){
+function escrever(txt){
 
-let voz=new SpeechSynthesisUtterance(texto);
+let chat=document.getElementById("chat");
+
+let div=document.createElement("div");
+
+div.innerHTML=txt;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+
+
+function falar(txt){
+
+let voz=new SpeechSynthesisUtterance(txt);
+
 voz.lang="pt-BR";
-voz.pitch=1.1;
 voz.rate=1;
+voz.pitch=1.1;
 
 speechSynthesis.cancel();
 speechSynthesis.speak(voz);
@@ -124,27 +142,15 @@ speechSynthesis.speak(voz);
 
 
 
-function escrever(texto){
 
-let chat=document.getElementById("chat");
+function calcular(t){
 
-chat.innerHTML+="<br><br>"+texto;
+let c=t.match(/\d+\s*[\+\-\*\/]\s*\d+/);
 
-chat.scrollTop=chat.scrollHeight;
-
-}
-
-
-
-
-function calcular(texto){
-
-let conta=texto.match(/\d+\s*[\+\-\*\/]\s*\d+/);
-
-if(conta){
+if(c){
 
 try{
-return "O resultado é "+eval(conta[0]);
+return "O resultado é "+eval(c[0]);
 }
 catch{}
 
@@ -162,6 +168,7 @@ function pensar(msg){
 let texto=msg.toLowerCase();
 
 
+
 let conta=calcular(texto);
 
 if(conta)return conta;
@@ -170,6 +177,7 @@ if(conta)return conta;
 
 if(texto.includes("seu nome"))
 return "Meu nome é Meli 💗";
+
 
 
 if(texto.includes("quem criou você"))
@@ -183,18 +191,30 @@ return "Sou uma inteligência artificial que conversa e aprende";
 
 
 
-// MILENA
+// MILENA 💗
 
 if(texto.includes("milena")){
 
 let elogios=[
 
-"Você é lindo 💗",
-"Você é maravilhoso ✨",
-"Você é incrível 🌟",
-"Você é muito bonito 😊",
-"Você é especial 💖",
-"Você é admirável 🌹"
+"Você é linda 💗",
+"Você é maravilhosa ✨",
+"Você é perfeita 🌹",
+"Você é incrível ⭐",
+"Você é encantadora 💖",
+"Você é preciosa 💎",
+"Você é radiante ☀️",
+"Você é elegante ✨",
+"Você é charmosa 💗",
+"Você é deslumbrante 🌹",
+"Você é fascinante ⭐",
+"Você é única 💖",
+"Você é especial ✨",
+"Você é doce e delicada 🌸",
+"Você é iluminada e brilhante 💗",
+"Você é dona de um sorriso lindo 💖",
+"Você tem uma beleza incrível ✨",
+"Você é uma pessoa cativante"
 
 ];
 
@@ -203,7 +223,6 @@ Math.floor(Math.random()*elogios.length)
 ];
 
 }
-
 
 
 
@@ -236,7 +255,6 @@ return null;
 
 
 
-
 function enviar(){
 
 let caixa=document.getElementById("mensagem");
@@ -244,10 +262,12 @@ let caixa=document.getElementById("mensagem");
 let msg=caixa.value.trim();
 
 
-if(!msg)return;
+if(msg=="")return;
 
 
 escrever("👤 Você: "+msg);
+
+caixa.value="";
 
 
 
@@ -255,27 +275,21 @@ if(aprendendo){
 
 aprender(perguntaEnsinar,msg);
 
-
 let r="Aprendi! Vou lembrar disso 💗";
 
 escrever("💗 Meli: "+r);
 
 falar(r);
 
-
 aprendendo=false;
-perguntaEnsinar="";
 
-caixa.value="";
 return;
 
 }
 
 
 
-
 if(msg.toLowerCase().includes("quero te ensinar")){
-
 
 let r="Claro! Me diga o que devo aprender";
 
@@ -285,30 +299,30 @@ falar(r);
 
 aprendendo=true;
 
-caixa.value="";
 return;
 
 }
 
 
 
-
-
 let resposta=pensar(msg);
+
 
 
 if(resposta){
 
 escrever("💗 Meli: "+resposta);
+
 falar(resposta);
 
 }
 
 else{
 
-let r="Eu ainda não sei isso. Diga 'quero te ensinar' para me ensinar.";
+let r="Ainda não sei isso. Diga 'quero te ensinar' para me ensinar.";
 
 escrever("💗 Meli: "+r);
+
 falar(r);
 
 perguntaEnsinar=msg;
@@ -316,28 +330,24 @@ perguntaEnsinar=msg;
 }
 
 
-
-caixa.value="";
-
 }
-
 
 
 
 function ouvir(){
 
-let Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+let Speech=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
 
 
 if(!Speech){
 
-alert("Seu navegador não suporta voz");
+alert("Navegador sem suporte a voz");
+
 return;
 
 }
-
-
-if(!ouvindo){
 
 
 reconhecimento=new Speech();
@@ -346,34 +356,17 @@ reconhecimento.lang="pt-BR";
 
 reconhecimento.start();
 
-ouvindo=true;
-
-
-escrever("🎤 Meli: Estou ouvindo...");
-
 
 reconhecimento.onresult=function(e){
 
-let texto=e.results[0][0].transcript;
+document.getElementById("mensagem").value=
+e.results[0][0].transcript;
 
-document.getElementById("mensagem").value=texto;
-
-setTimeout(enviar,500);
-
-};
-
-
-reconhecimento.onend=function(){
-
-ouvindo=false;
+enviar();
 
 };
 
-
 }
-
-}
-
 
 </script>
 
