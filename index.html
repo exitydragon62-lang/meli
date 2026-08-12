@@ -1,88 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>Meli IA 💗</title>
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+
 <style>
+
 body{
+
 background:#30051f;
+
 font-family:Arial;
+
 display:flex;
+
 justify-content:center;
+
 align-items:center;
+
 height:100vh;
-margin:0
+
+margin:0;
+
 }
+
 
 .app{
+
 width:90%;
+
 max-width:430px;
+
 background:#ffb6d9;
+
 padding:20px;
-border-radius:25px
+
+border-radius:25px;
+
 }
+
 
 h1{
+
 text-align:center;
-color:#ff1475
+
+color:#ff1475;
+
 }
+
 
 #chat{
+
 background:white;
+
 height:360px;
+
 overflow:auto;
+
 padding:15px;
-border-radius:15px
+
+border-radius:15px;
+
 }
+
 
 input{
+
 width:55%;
+
 padding:12px;
+
 border:0;
-border-radius:10px
+
+border-radius:10px;
+
 }
 
+
 button{
+
 padding:12px;
+
 border:0;
+
 border-radius:10px;
+
 background:#ff4d9d;
-color:white
+
+color:white;
+
 }
+
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="app">
 
+
 <h1>💗 Meli IA</h1>
 
+
 <div id="chat">
+
 💗 Meli:<br>
+
 Olá! Eu sou a Meli.<br>
+
 Criada por Luiz Benicio ✨
+
 </div>
+
 
 <br>
 
+
 <input id="mensagem" placeholder="Digite ou fale...">
 
+
 <button onclick="enviar()">Enviar</button>
+
 <button onclick="ouvir()">🎤</button>
 
+
 </div>
+
 
 
 <script>
 
+
 let memoria = JSON.parse(localStorage.getItem("meli_memoria"))
-|| {conhecimentos:[]};
+
+|| { conhecimentos:[] };
+
 
 
 let aprendendo=false;
+
 let perguntaEnsinar="";
 
 
@@ -90,48 +152,63 @@ let perguntaEnsinar="";
 function salvar(){
 
 localStorage.setItem(
+
 "meli_memoria",
+
 JSON.stringify(memoria)
+
 );
 
 }
 
 
 
-function falar(t){
+function falar(texto){
 
-let voz=new SpeechSynthesisUtterance(t);
+
+let voz=new SpeechSynthesisUtterance(texto);
+
 
 voz.lang="pt-BR";
+
 voz.pitch=1.1;
+
 voz.rate=1;
+
+
 
 speechSynthesis.cancel();
 
 speechSynthesis.speak(voz);
 
+
 }
 
 
 
-function escrever(t){
+
+function escrever(texto){
+
 
 let chat=document.getElementById("chat");
 
+
 let div=document.createElement("div");
 
-div.innerHTML="<br>"+t;
+
+div.innerHTML="<br>"+texto;
+
 
 chat.appendChild(div);
 
+
 chat.scrollTop=chat.scrollHeight;
+
 
 }
 
 
 
-
-// MEMÓRIA CORRIGIDA
 
 function aprender(pergunta,resposta){
 
@@ -146,7 +223,9 @@ x=>x.pergunta===pergunta.toLowerCase()
 
 if(existe){
 
+
 existe.resposta=resposta;
+
 
 }
 
@@ -167,17 +246,14 @@ resposta:resposta
 
 salvar();
 
-}
+
+}function pensar(msg){
+
+let texto = msg.toLowerCase();
 
 
 
-
-function pensar(msg){
-
-
-let texto=msg.toLowerCase();
-
-
+// Informações básicas da Meli
 
 if(texto.includes("seu nome"))
 
@@ -191,7 +267,14 @@ return "Eu fui criada pelo Luiz Benicio ✨";
 
 
 
+if(texto.includes("exity dragon"))
 
+return "Meu criador também é conhecido como Exity Dragon 💗";
+
+
+
+
+// Elogios para Milena
 
 if(texto.includes("milena")){
 
@@ -218,6 +301,8 @@ let elogios=[
 
 "Deslumbrante 🌹",
 
+"Fascinante ⭐",
+
 "Única 💖",
 
 "Especial ✨"
@@ -234,7 +319,7 @@ return elogios[Math.floor(Math.random()*elogios.length)];
 
 
 
-// BUSCA NA MEMÓRIA
+// Memória aprendida
 
 for(let item of memoria.conhecimentos){
 
@@ -248,26 +333,52 @@ let pontos=0;
 for(let palavra of palavras){
 
 
-if(palavra.length>2 && texto.includes(palavra)){
+if(palavra.length > 2 && texto.includes(palavra)){
+
 
 pontos++;
 
-}
-
 
 }
 
 
+}
 
-if(pontos>=2){
+
+
+if(pontos >= 2){
+
 
 return item.resposta;
 
-}
-
 
 }
 
+
+}
+
+
+
+
+
+// Contas básicas
+
+let conta = texto.match(/[0-9]+[\+\-\*\/][0-9]+/);
+
+
+
+if(conta){
+
+
+try{
+
+
+return "O resultado é: " + eval(conta[0]) + " 💗";
+
+
+}
+
+catch(e){
 
 
 return null;
@@ -276,16 +387,18 @@ return null;
 }
 
 
+}
 
 
 
 
+return null;
 
-function enviar(){
+
+}function enviar(){
 
 
 let caixa=document.getElementById("mensagem");
-
 
 let msg=caixa.value.trim();
 
@@ -298,46 +411,34 @@ if(!msg)return;
 escrever("👤 Você: "+msg);
 
 
+
 caixa.value="";
 
 
 
 
+// Se estiver aprendendo
 
 if(aprendendo){
-
-
-
-if(msg.toLowerCase()=="sim"){
-
-
-let r="Tudo bem! Me diga o que devo aprender 💗";
-
-escrever("💗 Meli: "+r);
-
-falar(r);
-
-return;
-
-
-}
-
 
 
 aprender(perguntaEnsinar,msg);
 
 
 
-let r="Aprendi! Vou lembrar disso 💗";
+let resposta="Aprendi! Vou lembrar disso 💗";
 
 
-escrever("💗 Meli: "+r);
+escrever("💗 Meli: "+resposta);
 
-falar(r);
+
+falar(resposta);
 
 
 
 aprendendo=false;
+
+perguntaEnsinar="";
 
 
 return;
@@ -354,11 +455,35 @@ let resposta=pensar(msg);
 
 
 
-
 if(resposta){
 
 
 escrever("💗 Meli: "+resposta);
+
+
+falar(resposta);
+
+
+}
+
+else{
+
+
+perguntaEnsinar=msg;
+
+
+aprendendo=true;
+
+
+
+let resposta=
+
+"Eu ainda não sei isso 💗 Me ensine a resposta e eu vou aprender!";
+
+
+
+escrever("💗 Meli: "+resposta);
+
 
 falar(resposta);
 
@@ -367,31 +492,7 @@ falar(resposta);
 
 
 
-else{
-
-
-perguntaEnsinar=msg;
-
-aprendendo=true;
-
-
-
-let r="Eu ainda não sei isso 💗 Quer me ensinar?";
-
-
-escrever("💗 Meli: "+r);
-
-falar(r);
-
-
 }
-
-
-
-
-}
-
-
 
 
 
@@ -400,9 +501,10 @@ falar(r);
 function ouvir(){
 
 
+
 let Speech=
 
-window.SpeechRecognition||
+window.SpeechRecognition ||
 
 window.webkitSpeechRecognition;
 
@@ -410,41 +512,51 @@ window.webkitSpeechRecognition;
 
 if(!Speech){
 
+
 alert("Seu navegador não suporta voz");
 
+
 return;
+
 
 }
 
 
 
-let rec=new Speech();
+
+let reconhecimento=new Speech();
 
 
 
-rec.lang="pt-BR";
-
-
-rec.start();
+reconhecimento.lang="pt-BR";
 
 
 
-rec.onresult=function(e){
+reconhecimento.start();
+
+
+
+
+reconhecimento.onresult=function(event){
+
 
 
 document.getElementById("mensagem").value=
 
-e.results[0][0].transcript;
+event.results[0][0].transcript;
+
 
 
 enviar();
 
 
-}
-
-
 
 }
+
+
+
+}
+
 
 
 
@@ -452,4 +564,5 @@ enviar();
 
 
 </body>
+
 </html>
