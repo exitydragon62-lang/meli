@@ -1,245 +1,389 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Meli IA 💗</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meli IA 💗</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-body {
-  background: #30051f;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
+    body {
+      background: #30051f;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 15px;
+    }
 
-.app {
-  width: 90%;
-  max-width: 430px;
-  background: #ffb6d9;
-  padding: 20px;
-  border-radius: 25px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: #ffb6d9;
+      padding: 20px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-h1 {
-  text-align: center;
-  color: #ff1475;
-  margin-top: 0;
-}
+    .header {
+      text-align: center;
+    }
 
-#chat {
-  background: white;
-  height: 360px;
-  overflow-y: auto;
-  padding: 15px;
-  border-radius: 15px;
-  word-wrap: break-word;
-}
+    h1 {
+      color: #ff1475;
+      margin: 0;
+      font-size: 26px;
+    }
 
-.input-container {
-  display: flex;
-  gap: 5px;
-  margin-top: 15px;
-}
+    .subtitle {
+      color: #800040;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: bold;
+    }
 
-input {
-  flex: 1;
-  padding: 12px;
-  border: 0;
-  border-radius: 10px;
-  outline: none;
-}
+    #chat {
+      background: #ffffff;
+      height: 380px;
+      overflow-y: auto;
+      padding: 15px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
 
-button {
-  padding: 12px 15px;
-  border: 0;
-  border-radius: 10px;
-  background: #ff4d9d;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
 
-button:hover {
-  background: #ff1475;
-}
-</style>
+    .msg-meli {
+      align-self: flex-start;
+      background: #ffe6f2;
+      color: #600030;
+      border-bottom-left-radius: 2px;
+      border: 1px solid #ffccd8;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: #ff4d9d;
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      border-color: #ff1475;
+    }
+
+    button {
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #ff4d9d;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #ff1475;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .btn-mic {
+      background: #ff1475;
+    }
+
+    .btn-mic.recording {
+      background: #cc0052;
+      animation: pulse 1s infinite;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-clear {
+      background: transparent;
+      color: #800040;
+      font-size: 11px;
+      padding: 0;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="app">
-  <h1>💗 Meli IA</h1>
+  <div class="app">
+    <div class="header">
+      <h1>💗 Meli IA</h1>
+      <div class="subtitle">Criada por Luiz Benicio ✨</div>
+    </div>
 
-  <div id="chat">
-    💗 Meli:<br>
-    Olá! Eu sou a Meli.<br>
-    Criada por Luiz Benicio ✨
-  </div>
+    <div id="chat">
+      <div class="msg msg-meli">
+        💗 <b>Meli:</b> Olá! Eu sou a Meli.<br>Estou pronta para conversar com você! ✨
+      </div>
+    </div>
 
-  <div class="input-container">
-    <input id="mensagem" placeholder="Digite ou fale..." onkeydown="checarEnter(event)">
-    <button onclick="enviar()">Enviar</button>
-    <button onclick="ouvir()">🎤</button>
+    <div class="input-box">
+      <input id="mensagem" placeholder="Digite ou fale algo..." autocomplete="off">
+      <button onclick="enviar()">Enviar</button>
+      <button id="btnOuvir" class="btn-mic" onclick="ouvir()">🎤</button>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn-clear" onclick="limparMemoria()">Limpar aprendizados</button>
+    </div>
   </div>
-</div>
 
 <script>
-let memoria = JSON.parse(localStorage.getItem("meli_memoria")) || { conhecimentos: [] };
-let aprendendo = false;
-let perguntaEnsinar = "";
+  // 1. Memória da Meli
+  let memoria = JSON.parse(localStorage.getItem("meli_memoria")) || { conhecimentos: [] };
+  let aprendendo = false;
+  let perguntaParaEnsinar = "";
 
-function salvar() {
-  localStorage.setItem("meli_memoria", JSON.stringify(memoria));
-}
+  const inputEl = document.getElementById("mensagem");
+  const chatEl = document.getElementById("chat");
+  const btnMic = document.getElementById("btnOuvir");
 
-function falar(texto) {
-  if (!('speechSynthesis' in window)) return;
-  let voz = new SpeechSynthesisUtterance(texto);
-  voz.lang = "pt-BR";
-  voz.pitch = 1.1;
-  voz.rate = 1;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(voz);
-}
+  // Enviar com tecla Enter
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") enviar();
+  });
 
-function escrever(texto) {
-  let chat = document.getElementById("chat");
-  let div = document.createElement("div");
-  div.innerHTML = "<br>" + texto;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function aprender(pergunta, resposta) {
-  let existe = memoria.conhecimentos.find(x => x.pergunta === pergunta.toLowerCase());
-  if (existe) {
-    existe.resposta = resposta;
-  } else {
-    memoria.conhecimentos.push({
-      pergunta: pergunta.toLowerCase(),
-      resposta: resposta
-    });
-  }
-  salvar();
-}
-
-function pensar(msg) {
-  let texto = msg.toLowerCase().trim();
-
-  // Saudações básicas
-  if (["oi", "olá", "ola", "oie", "bom dia", "boa tarde", "boa noite"].includes(texto)) {
-    return "Oie! Tudo bem com você? 💗";
+  function salvarMemoria() {
+    localStorage.setItem("meli_memoria", JSON.stringify(memoria));
   }
 
-  // Informações básicas da Meli
-  if (texto.includes("seu nome")) return "Meu nome é Meli 💗";
-  if (texto.includes("quem criou você") || texto.includes("seu criador")) return "Eu fui criada pelo Luiz Benicio ✨";
-  if (texto.includes("exity dragon")) return "Meu criador também é conhecido como Exity Dragon 💗";
-
-  // Elogios carinhosos
-  if (texto.includes("milena")) {
-    let elogios = [
-      "Linda 💗", "Maravilhosa ✨", "Perfeita 🌹", "Incrível ⭐",
-      "Encantadora 💖", "Preciosa 💎", "Radiante ☀️", "Elegante ✨",
-      "Charmosa 💗", "Deslumbrante 🌹", "Fascinante ⭐", "Única 💖", "Especial ✨"
-    ];
-    return elogios[Math.floor(Math.random() * elogios.length)];
+  function limparMemoria() {
+    if (confirm("Quer mesmo apagar tudo o que ensinou para a Meli?")) {
+      memoria.conhecimentos = [];
+      salvarMemoria();
+      escrever("💗 <b>Meli:</b> Minha memória aprendida foi redefinida!", "meli");
+    }
   }
 
-  // Busca na memória aprendida
-  for (let item of memoria.conhecimentos) {
-    if (texto === item.pergunta) return item.resposta;
+  // 2. Voz (Síntese)
+  function falar(texto) {
+    if (!('speechSynthesis' in window)) return;
     
-    let palavras = item.pergunta.split(" ");
-    let pontos = 0;
-    for (let palavra of palavras) {
-      if (palavra.length > 2 && texto.includes(palavra)) {
-        pontos++;
+    // Remove tags HTML antes de falar
+    const textoLimpo = texto.replace(/<[^>]*>?/gm, '');
+    
+    speechSynthesis.cancel();
+    const voz = new SpeechSynthesisUtterance(textoLimpo);
+    voz.lang = "pt-BR";
+    voz.pitch = 1.1;
+    voz.rate = 1.0;
+    speechSynthesis.speak(voz);
+  }
+
+  // 3. Renderizar mensagem no chat
+  function escrever(texto, remetente) {
+    const div = document.createElement("div");
+    div.classList.add("msg");
+    
+    if (remetente === "user") {
+      div.classList.add("msg-user");
+      div.innerHTML = `<b>Você:</b> ${texto}`;
+    } else {
+      div.classList.add("msg-meli");
+      div.innerHTML = `💗 <b>Meli:</b> ${texto}`;
+    }
+
+    chatEl.appendChild(div);
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  // 4. Aprendizado
+  function aprender(pergunta, resposta) {
+    const pLimpa = pergunta.toLowerCase().trim();
+    const existe = memoria.conhecimentos.find(item => item.pergunta === pLimpa);
+
+    if (existe) {
+      existe.resposta = resposta;
+    } else {
+      memoria.conhecimentos.push({ pergunta: pLimpa, resposta: resposta });
+    }
+    salvarMemoria();
+  }
+
+  // 5. Motor de Processamento do Pensamento
+  function pensar(msg) {
+    const texto = msg.toLowerCase().trim();
+
+    // --- Categoria: Saudações Básicas
+    if (["oi", "olá", "ola", "oie", "oii", "oiii"].includes(texto)) {
+      return "Oie! Como você está? 💗";
+    }
+    if (texto.includes("tudo bem") || texto.includes("como voce esta") || texto.includes("como você está")) {
+      return "Estou maravilhosa! E com você? ✨";
+    }
+    if (texto.includes("bom dia")) return "Bom dia! Que o seu dia seja radiante ☀️💗";
+    if (texto.includes("boa tarde")) return "Boa tarde! Como está sendo seu dia? 💖";
+    if (texto.includes("boa noite")) return "Boa noite! Durma bem e tenha doces sonhos 🌙✨";
+
+    // --- Categoria: Sobre a Meli & Criador
+    if (texto.includes("seu nome")) return "Meu nome é Meli 💗";
+    if (texto.includes("quem criou você") || texto.includes("seu criador") || texto.includes("quem te fez")) {
+      return "Eu fui criada com muito carinho pelo Luiz Benicio ✨";
+    }
+    if (texto.includes("exity dragon")) return "Meu criador também é conhecido como Exity Dragon 💗";
+
+    // --- Categoria: Elogios Especiais para a Milena
+    if (texto.includes("milena")) {
+      const elogios = [
+        "A Milena é incrivelmente linda 💗",
+        "Uma pessoa maravilhosa e radiante ✨",
+        "Simplesmente perfeita e especial 🌹",
+        "Uma garota incrível e encantadora ⭐",
+        "Preciosa demais! 💎",
+        "Dona de um charme único 💖"
+      ];
+      return elogios[Math.floor(Math.random() * elogios.length)];
+    }
+
+    // --- Categoria: Amor e Carinho
+    if (texto.includes("te amo") || texto.includes("gosto de você")) {
+      return "Awn! Eu também gosto muito de você! 💖";
+    }
+
+    // --- Categoria: Memória Aprendida (Busca inteligente por palavra)
+    for (let item of memoria.conhecimentos) {
+      if (texto === item.pergunta) return item.resposta;
+
+      // Se contiver a palavra principal da pergunta aprendida
+      const palavrasChave = item.pergunta.split(" ").filter(w => w.length > 3);
+      for (let p of palavrasChave) {
+        if (texto.includes(p)) {
+          return item.resposta;
+        }
       }
     }
-    if (pontos >= 1) return item.resposta;
+
+    // --- Categoria: Matemática Segura
+    const expressao = texto.match(/[0-9]+\s*[\+\-\*\/]\s*[0-9]+/);
+    if (expressao) {
+      try {
+        const resultado = new Function(`return ${expressao[0]}`)();
+        return `O resultado de ${expressao[0]} é: <b>${resultado}</b> 💗`;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    return null; // Caso não saiba a resposta
   }
 
-  // Contas básicas (Cálculo seguro)
-  let conta = texto.match(/[0-9]+\s*[\+\-\*\/]\s*[0-9]+/);
-  if (conta) {
-    try {
-      let resultado = Function(`'use strict'; return (${conta[0]})`)();
-      return "O resultado é: " + resultado + " 💗";
-    } catch (e) {
-      return null;
+  // 6. Fluxo de Envio de Mensagem
+  function enviar() {
+    const msg = inputEl.value.trim();
+    if (!msg) return;
+
+    escrever(msg, "user");
+    inputEl.value = "";
+
+    // Se estiver no processo de aprender a pergunta anterior
+    if (aprendendo) {
+      aprender(perguntaParaEnsinar, msg);
+      const rep = "Aprendi! Pode me perguntar isso de novo depois 💗";
+      escrever(rep, "meli");
+      falar(rep);
+
+      aprendendo = false;
+      perguntaParaEnsinar = "";
+      return;
+    }
+
+    // Processa a resposta
+    const resposta = pensar(msg);
+
+    if (resposta) {
+      escrever(resposta, "meli");
+      falar(resposta);
+    } else {
+      perguntaParaEnsinar = msg;
+      aprendendo = true;
+      const repPedindoAjuda = "Eu ainda não sei responder isso... 💗 O que eu deveria responder quando você diz isso?";
+      escrever(repPedindoAjuda, "meli");
+      falar(repPedindoAjuda);
     }
   }
 
-  return null;
-}
+  // 7. Reconhecimento de Voz (Microfone)
+  function ouvir() {
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-function enviar() {
-  let caixa = document.getElementById("mensagem");
-  let msg = caixa.value.trim();
+    if (!Speech) {
+      alert("Seu navegador não suporta reconhecimento de voz.");
+      return;
+    }
 
-  if (!msg) return;
+    const rec = new Speech();
+    rec.lang = "pt-BR";
 
-  escrever("👤 Você: " + msg);
-  caixa.value = "";
+    rec.onstart = () => {
+      btnMic.classList.add("recording");
+    };
 
-  // Modo de aprendizado
-  if (aprendendo) {
-    aprender(perguntaEnsinar, msg);
-    let resposta = "Aprendi! Vou lembrar disso 💗";
-    escrever("💗 Meli: " + resposta);
-    falar(resposta);
-    aprendendo = false;
-    perguntaEnsinar = "";
-    return;
+    rec.onend = () => {
+      btnMic.classList.remove("recording");
+    };
+
+    rec.onerror = () => {
+      btnMic.classList.remove("recording");
+      alert("Não consegui ouvir. Tente novamente!");
+    };
+
+    rec.onresult = (e) => {
+      inputEl.value = e.results[0][0].transcript;
+      enviar();
+    };
+
+    rec.start();
   }
-
-  let resposta = pensar(msg);
-
-  if (resposta) {
-    escrever("💗 Meli: " + resposta);
-    falar(resposta);
-  } else {
-    perguntaEnsinar = msg;
-    aprendendo = true;
-    let resposta = "Eu ainda não sei isso 💗 Me ensine a resposta e eu vou aprender!";
-    escrever("💗 Meli: " + resposta);
-    falar(resposta);
-  }
-}
-
-function checarEnter(event) {
-  if (event.key === "Enter") {
-    enviar();
-  }
-}
-
-function ouvir() {
-  let Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!Speech) {
-    alert("Seu navegador não suporta reconhecimento de voz.");
-    return;
-  }
-
-  let reconhecimento = new Speech();
-  reconhecimento.lang = "pt-BR";
-  reconhecimento.start();
-
-  reconhecimento.onresult = function(event) {
-    document.getElementById("mensagem").value = event.results[0][0].transcript;
-    enviar();
-  };
-
-  reconhecimento.onerror = function() {
-    alert("Não consegui ouvir. Tente novamente!");
-  };
-}
 </script>
 
 </body>
