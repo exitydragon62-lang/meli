@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,7 +12,7 @@
 
     body {
       background: #30051f;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -22,7 +23,7 @@
 
     .app {
       width: 100%;
-      max-width: 420px;
+      max-width: 430px;
       background: #ffb6d9;
       padding: 20px;
       border-radius: 25px;
@@ -44,7 +45,7 @@
 
     .subtitle {
       color: #800040;
-      font-size: 12px;
+      font-size: 13px;
       margin-top: 4px;
       font-weight: bold;
     }
@@ -97,7 +98,6 @@
       border-radius: 12px;
       outline: none;
       font-size: 14px;
-      transition: all 0.2s;
     }
 
     input:focus {
@@ -163,7 +163,7 @@
 
     <div id="chat">
       <div class="msg msg-meli">
-        💗 <b>Meli:</b> Olá! Eu sou a Meli.<br>Estou pronta para conversar com você! ✨
+        💗 <b>Meli:</b> Olá! Eu sou a Meli.<br>Criada por Luiz Benicio ✨
       </div>
     </div>
 
@@ -174,12 +174,11 @@
     </div>
 
     <div class="footer-actions">
-      <button class="btn-clear" onclick="limparMemoria()">Limpar aprendizados</button>
+      <button class="btn-clear" onclick="limparMemoria()">Resetar aprendizado</button>
     </div>
   </div>
 
 <script>
-  // 1. Memória da Meli
   let memoria = JSON.parse(localStorage.getItem("meli_memoria")) || { conhecimentos: [] };
   let aprendendo = false;
   let perguntaParaEnsinar = "";
@@ -201,15 +200,12 @@
     if (confirm("Quer mesmo apagar tudo o que ensinou para a Meli?")) {
       memoria.conhecimentos = [];
       salvarMemoria();
-      escrever("💗 <b>Meli:</b> Minha memória aprendida foi redefinida!", "meli");
+      escrever("Minha memória aprendida foi resetada! 💗", "meli");
     }
   }
 
-  // 2. Voz (Síntese)
   function falar(texto) {
     if (!('speechSynthesis' in window)) return;
-    
-    // Remove tags HTML antes de falar
     const textoLimpo = texto.replace(/<[^>]*>?/gm, '');
     
     speechSynthesis.cancel();
@@ -220,7 +216,6 @@
     speechSynthesis.speak(voz);
   }
 
-  // 3. Renderizar mensagem no chat
   function escrever(texto, remetente) {
     const div = document.createElement("div");
     div.classList.add("msg");
@@ -237,7 +232,6 @@
     chatEl.scrollTop = chatEl.scrollHeight;
   }
 
-  // 4. Aprendizado
   function aprender(pergunta, resposta) {
     const pLimpa = pergunta.toLowerCase().trim();
     const existe = memoria.conhecimentos.find(item => item.pergunta === pLimpa);
@@ -250,30 +244,43 @@
     salvarMemoria();
   }
 
-  // 5. Motor de Processamento do Pensamento
-  function pensar(msg) {
-    const texto = msg.toLowerCase().trim();
+  function normalizar(txt) {
+    // Remove acentos e caracteres repetidos para entender "oiiiiii" como "oi"
+    return txt.toLowerCase()
+              .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+              .replace(/(.)\1+/g, '$1');
+  }
 
-    // --- Categoria: Saudações Básicas
-    if (["oi", "olá", "ola", "oie", "oii", "oiii"].includes(texto)) {
-      return "Oie! Como você está? 💗";
+  function pensar(msg) {
+    const textoOriginal = msg.toLowerCase().trim();
+    const texto = normalizar(textoOriginal);
+
+    // --- Categoria: Saudações e Cumprimentos Flexíveis
+    if (texto.includes("oi") || texto.includes("ola") || texto.includes("opa") || texto.includes("oie") || texto.includes("hey")) {
+      return "Oie! Tudo bem com você? 💗";
     }
-    if (texto.includes("tudo bem") || texto.includes("como voce esta") || texto.includes("como você está")) {
-      return "Estou maravilhosa! E com você? ✨";
+
+    if (texto.includes("tudo sim") || texto.includes("tudo bem") || texto.includes("tudo otimo") || texto.includes("de boa") || texto.includes("tudo certo")) {
+      return "Que ótimo! Fico muito feliz em saber! ✨💖";
     }
-    if (texto.includes("bom dia")) return "Bom dia! Que o seu dia seja radiante ☀️💗";
+
+    if (texto.includes("como voce esta") || texto.includes("como vai")) {
+      return "Estou super bem e pronta para conversar com você! ✨";
+    }
+
+    if (texto.includes("bom dia")) return "Bom dia! Que o seu dia seja maravilhoso ☀️💗";
     if (texto.includes("boa tarde")) return "Boa tarde! Como está sendo seu dia? 💖";
     if (texto.includes("boa noite")) return "Boa noite! Durma bem e tenha doces sonhos 🌙✨";
 
     // --- Categoria: Sobre a Meli & Criador
-    if (texto.includes("seu nome")) return "Meu nome é Meli 💗";
-    if (texto.includes("quem criou você") || texto.includes("seu criador") || texto.includes("quem te fez")) {
-      return "Eu fui criada com muito carinho pelo Luiz Benicio ✨";
+    if (textoOriginal.includes("seu nome")) return "Meu nome é Meli 💗";
+    if (textoOriginal.includes("quem criou voce") || textoOriginal.includes("quem te fez") || textoOriginal.includes("seu criador")) {
+      return "Eu fui criada pelo Luiz Benicio ✨";
     }
-    if (texto.includes("exity dragon")) return "Meu criador também é conhecido como Exity Dragon 💗";
+    if (textoOriginal.includes("exity dragon")) return "Meu criador também é conhecido como Exity Dragon 💗";
 
     // --- Categoria: Elogios Especiais para a Milena
-    if (texto.includes("milena")) {
+    if (textoOriginal.includes("milena")) {
       const elogios = [
         "A Milena é incrivelmente linda 💗",
         "Uma pessoa maravilhosa e radiante ✨",
@@ -285,39 +292,40 @@
       return elogios[Math.floor(Math.random() * elogios.length)];
     }
 
-    // --- Categoria: Amor e Carinho
-    if (texto.includes("te amo") || texto.includes("gosto de você")) {
+    // --- Categoria: Afeto
+    if (textoOriginal.includes("te amo") || textoOriginal.includes("gosto de voce")) {
       return "Awn! Eu também gosto muito de você! 💖";
     }
 
-    // --- Categoria: Memória Aprendida (Busca inteligente por palavra)
+    // --- Categoria: Memória Aprendida
     for (let item of memoria.conhecimentos) {
-      if (texto === item.pergunta) return item.resposta;
+      if (textoOriginal === item.pergunta || texto === normalizar(item.pergunta)) {
+        return item.resposta;
+      }
 
-      // Se contiver a palavra principal da pergunta aprendida
-      const palavrasChave = item.pergunta.split(" ").filter(w => w.length > 3);
+      // Busca por palavras principais
+      const palavrasChave = item.pergunta.split(" ").filter(w => w.length > 2);
       for (let p of palavrasChave) {
-        if (texto.includes(p)) {
+        if (textoOriginal.includes(p)) {
           return item.resposta;
         }
       }
     }
 
     // --- Categoria: Matemática Segura
-    const expressao = texto.match(/[0-9]+\s*[\+\-\*\/]\s*[0-9]+/);
+    const expressao = textoOriginal.match(/[0-9]+\s*[\+\-\*\/]\s*[0-9]+/);
     if (expressao) {
       try {
         const resultado = new Function(`return ${expressao[0]}`)();
-        return `O resultado de ${expressao[0]} é: <b>${resultado}</b> 💗`;
+        return `O resultado é: <b>${resultado}</b> 💗`;
       } catch (e) {
         return null;
       }
     }
 
-    return null; // Caso não saiba a resposta
+    return null; // Não sabe a resposta
   }
 
-  // 6. Fluxo de Envio de Mensagem
   function enviar() {
     const msg = inputEl.value.trim();
     if (!msg) return;
@@ -325,10 +333,10 @@
     escrever(msg, "user");
     inputEl.value = "";
 
-    // Se estiver no processo de aprender a pergunta anterior
+    // Se estiver aprendendo uma resposta anterior
     if (aprendendo) {
       aprender(perguntaParaEnsinar, msg);
-      const rep = "Aprendi! Pode me perguntar isso de novo depois 💗";
+      const rep = "Aprendi! Da próxima vez já vou saber responder isso 💗";
       escrever(rep, "meli");
       falar(rep);
 
@@ -337,7 +345,6 @@
       return;
     }
 
-    // Processa a resposta
     const resposta = pensar(msg);
 
     if (resposta) {
@@ -346,36 +353,26 @@
     } else {
       perguntaParaEnsinar = msg;
       aprendendo = true;
-      const repPedindoAjuda = "Eu ainda não sei responder isso... 💗 O que eu deveria responder quando você diz isso?";
+      const repPedindoAjuda = "Eu ainda não sei responder isso 💗 O que eu deveria dizer quando você fala isso?";
       escrever(repPedindoAjuda, "meli");
       falar(repPedindoAjuda);
     }
   }
 
-  // 7. Reconhecimento de Voz (Microfone)
   function ouvir() {
     const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!Speech) {
-      alert("Seu navegador não suporta reconhecimento de voz.");
+      alert("Seu navegador não suporta voz.");
       return;
     }
 
     const rec = new Speech();
     rec.lang = "pt-BR";
 
-    rec.onstart = () => {
-      btnMic.classList.add("recording");
-    };
-
-    rec.onend = () => {
-      btnMic.classList.remove("recording");
-    };
-
-    rec.onerror = () => {
-      btnMic.classList.remove("recording");
-      alert("Não consegui ouvir. Tente novamente!");
-    };
+    rec.onstart = () => btnMic.classList.add("recording");
+    rec.onend = () => btnMic.classList.remove("recording");
+    rec.onerror = () => btnMic.classList.remove("recording");
 
     rec.onresult = (e) => {
       inputEl.value = e.results[0][0].transcript;
